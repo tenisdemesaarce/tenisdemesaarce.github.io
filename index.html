@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2º Campeonato de Tênis de Mesa da ARCE</title>
+<meta name="description" content="Inscrições abertas para o 2º Campeonato de Tênis de Mesa da ARCE, de 30/11 a 04/12/2026.">
+<meta property="og:title" content="2º Campeonato de Tênis de Mesa da ARCE">
+<meta property="og:description" content="Inscrições abertas! Jogos de 30/11 a 04/12, no horário do almoço.">
+<meta property="og:image" content="card.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-900: #071630;
+    --navy-800: #0b2147;
+    --navy-700: #13306b;
+    --blue: #2e6db4;
+    --orange: #f7993a;
+    --orange-dark: #e27c20;
+    --green: #3db554;
+    --white: #ffffff;
+    --muted: #b8c6e0;
+    --line: rgba(255, 255, 255, .12);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--navy-800);
+    color: var(--white);
+    font: 400 17px/1.6 "Barlow", system-ui, sans-serif;
+  }
+  a { color: var(--orange); }
+  img { max-width: 100%; display: block; }
+  .wrap { width: min(1100px, 100% - 32px); margin-inline: auto; }
+  .display {
+    font-family: "Barlow Condensed", sans-serif;
+    font-style: italic;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: .95;
+    letter-spacing: .5px;
+  }
+
+  /* ---------- nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(7, 22, 48, .92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 60px; }
+  nav .brand { font-family: "Barlow Condensed", sans-serif; font-style: italic; font-weight: 800; font-size: 22px; color: var(--white); text-decoration: none; }
+  nav .brand span { color: var(--orange); }
+  nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; }
+  nav ul a { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 15px; }
+  nav ul a:hover { color: var(--white); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--orange); color: var(--navy-900);
+    font-weight: 700; text-decoration: none; border: 0; cursor: pointer;
+    padding: 12px 22px; border-radius: 999px; font-size: 16px;
+    transition: transform .15s, background .15s;
+  }
+  .btn:hover { background: #ffad57; transform: translateY(-1px); }
+  .btn.small { padding: 8px 16px; font-size: 14px; }
+  .btn.ghost { background: transparent; color: var(--white); box-shadow: inset 0 0 0 2px var(--line); }
+  .btn.ghost:hover { box-shadow: inset 0 0 0 2px var(--white); }
+  @media (max-width: 760px) { nav ul { display: none; } }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(900px 500px at 85% 20%, rgba(247, 153, 58, .22), transparent 60%),
+      radial-gradient(700px 500px at 0% 100%, rgba(61, 181, 84, .18), transparent 60%),
+      var(--navy-900);
+    padding: 64px 0 72px;
+  }
+  .hero::before, .hero::after {
+    content: ""; position: absolute; height: 22px; width: 60%; transform: skewX(-24deg);
+  }
+  .hero::before { background: var(--green); top: 28px; left: -12%; opacity: .9; }
+  .hero::after { background: var(--orange); bottom: 30px; right: -14%; opacity: .9; }
+  .hero .wrap { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 48px; align-items: center; }
+  .hero figure img { width: 100%; height: auto; }
+  .tag {
+    display: inline-block; background: var(--green); color: var(--navy-900);
+    font-weight: 700; font-size: 14px; padding: 6px 14px; border-radius: 999px; letter-spacing: .3px;
+  }
+  .hero h1 { font-size: clamp(54px, 9vw, 104px); margin: 18px 0 10px; }
+  .hero h1 .sub { display: block; font-size: .42em; color: var(--orange); margin-bottom: 6px; }
+  .hero p.lead { font-size: 19px; color: var(--muted); max-width: 520px; margin: 0 0 26px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+  .fact { background: rgba(255, 255, 255, .06); border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; }
+  .fact b { display: block; font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .6px; }
+  .fact span { font-weight: 700; font-size: 18px; }
+  .hero .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero figure { margin: 0; }
+  .hero figure img { border-radius: 18px; box-shadow: 0 30px 60px rgba(0, 0, 0, .45); transform: rotate(2deg); }
+  @media (max-width: 860px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .hero figure { max-width: 380px; margin-inline: auto; }
+  }
+
+  /* ---------- countdown ---------- */
+  .countdown { background: var(--orange); color: var(--navy-900); padding: 22px 0; }
+  .countdown .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 32px; }
+  .countdown .label { font-size: 26px; }
+  .clock { display: flex; gap: 14px; }
+  .clock div { text-align: center; min-width: 58px; }
+  .clock strong { display: block; font: 800 italic 40px/1 "Barlow Condensed", sans-serif; }
+  .clock small { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .8px; }
+
+  /* ---------- sections ---------- */
+  section { padding: 72px 0; }
+  section:nth-of-type(even) { background: var(--navy-700); }
+  h2 { font-size: clamp(36px, 5vw, 52px); margin: 0 0 12px; }
+  h2 em { color: var(--orange); font-style: inherit; }
+  .intro { color: var(--muted); max-width: 640px; margin: 0 0 36px; }
+  .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card {
+    background: rgba(255, 255, 255, .05); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 24px;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 20px; }
+  .card p { margin: 0; color: var(--muted); }
+  .card .num { font: 800 italic 44px/1 "Barlow Condensed", sans-serif; color: var(--orange); margin-bottom: 8px; }
+
+  /* steps */
+  .steps { counter-reset: s; display: grid; gap: 14px; margin: 0 0 32px; padding: 0; list-style: none; }
+  .steps li {
+    counter-increment: s; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;
+    background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px;
+  }
+  .steps li::before {
+    content: counter(s); display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+    background: var(--orange); color: var(--navy-900); font: 800 italic 24px "Barlow Condensed", sans-serif;
+  }
+  .steps strong { display: block; font-size: 18px; }
+  .steps span { color: var(--muted); }
+  .pix {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    margin-top: 8px; background: var(--navy-900); border-radius: 10px; padding: 10px 14px;
+  }
+  .pix code { font-size: 16px; color: var(--white); word-break: break-all; }
+
+  .signup { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; align-items: start; }
+  .signup .steps { margin: 0; }
+  @media (max-width: 860px) { .signup { grid-template-columns: 1fr; } }
+  #form-inscricao { display: grid; gap: 16px; }
+  #form-inscricao h3 { font-size: 24px; margin-bottom: 4px; }
+  #form-inscricao label { display: grid; gap: 6px; font-weight: 600; font-size: 15px; }
+  #form-inscricao input:not([type=checkbox]) {
+    font: inherit; color: var(--white); background: var(--navy-900);
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; width: 100%;
+  }
+  #form-inscricao input:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+  #form-inscricao input[aria-invalid=true] { border-color: #ff6b6b; }
+  #form-inscricao .check { grid-template-columns: 22px 1fr; align-items: start; font-weight: 400; color: var(--muted); }
+  #form-inscricao .check input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--orange); }
+  .form-error { color: #ff8f8f; margin: 0; min-height: 1em; font-weight: 600; }
+  #form-inscricao .btn { justify-self: start; }
+  #form-inscricao .btn[disabled] { opacity: .6; cursor: wait; }
+  .done { text-align: center; padding: 32px 24px; border-color: rgba(61, 181, 84, .6); display: grid; gap: 12px; justify-items: center; }
+  .done .num { color: var(--green); font-size: 56px; margin: 0; }
+  .done p { margin: 0; }
+
+  /* tela de pagamento */
+  dialog#pagamento {
+    width: min(720px, 100% - 24px); max-height: calc(100% - 24px); overflow: auto;
+    padding: 0; border: 1px solid var(--line); border-radius: 18px;
+    background: var(--navy-800); color: var(--white);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, .6);
+  }
+  dialog#pagamento::backdrop { background: rgba(4, 12, 28, .8); backdrop-filter: blur(4px); }
+  .fechar {
+    position: absolute; top: 10px; right: 12px; width: 40px; height: 40px; border: 0; border-radius: 50%;
+    background: rgba(255, 255, 255, .08); color: var(--white); font-size: 26px; line-height: 1; cursor: pointer;
+  }
+  .pag-topo { padding: 28px 28px 8px; background: linear-gradient(135deg, var(--navy-700), var(--navy-800)); }
+  .pag-topo h2 { margin: 14px 0 8px; font-size: 44px; }
+  .pag-topo p { margin: 0 0 12px; color: var(--muted); }
+  .pag-corpo { display: grid; grid-template-columns: auto 1fr; gap: 24px; padding: 20px 28px; align-items: start; }
+  .pag-info { display: grid; gap: 10px; min-width: 0; }
+  .pag-info p { margin: 0; }
+  .valor { font-size: 48px; color: var(--orange); }
+  .qr { background: var(--white); padding: 12px; border-radius: 12px; width: 220px; height: 220px; }
+  .qr svg, .qr img { width: 100%; height: 100%; display: block; }
+  .pix-label { font-size: 14px; color: var(--muted); }
+  .pag-info .pix { margin: 0; }
+  .pag-info .pix code { font-size: 12px; }
+  .pag-info .btn { justify-self: start; }
+  .pag-rodape {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 18px 28px 26px; border-top: 1px solid var(--line);
+  }
+  .pag-rodape p { margin: 0; color: var(--muted); }
+  @media (max-width: 600px) {
+    .pag-corpo { grid-template-columns: 1fr; justify-items: center; }
+    .pag-info { width: 100%; }
+    .pag-info .btn { justify-self: stretch; }
+    .pag-topo h2 { font-size: 36px; }
+  }
+
+  /* inscritos */
+  .inscritos { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); list-style: none; padding: 0; margin: 0; }
+  .inscritos li { background: rgba(255, 255, 255, .06); border-left: 4px solid var(--green); border-radius: 8px; padding: 12px 14px; }
+  .inscritos li b { display: block; }
+  .inscritos li span { color: var(--muted); font-size: 14px; }
+  .vagas { font-weight: 700; color: var(--green); margin: -18px 0 24px; }
+
+  /* regulamento */
+  .rules { display: grid; gap: 12px; }
+  details {
+    background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 20px;
+  }
+  details[open] { border-color: rgba(247, 153, 58, .5); }
+  summary { cursor: pointer; font-weight: 700; font-size: 18px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::after { content: "+"; color: var(--orange); font-size: 24px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details ul, details p { color: var(--muted); margin: 12px 0 0; }
+  details li { margin-bottom: 6px; }
+
+  /* prêmios */
+  .podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: end; }
+  .podium .card { text-align: center; }
+  .podium .p1 { padding-top: 40px; border-color: rgba(247, 153, 58, .6); }
+  .podium .medal { font-size: 46px; line-height: 1; margin-bottom: 8px; }
+  @media (max-width: 640px) { .podium { grid-template-columns: 1fr; } .podium .p1 { order: -1; } }
+
+  footer { background: var(--navy-900); padding: 40px 0; text-align: center; color: var(--muted); font-size: 15px; }
+  footer .logo { background: var(--white); border-radius: 12px; padding: 12px 18px; display: inline-block; margin-bottom: 14px; }
+  footer .logo img { height: 46px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#topo">2º TÊNIS DE MESA <span>ARCE</span></a>
+    <ul>
+      <li><a href="#evento">O evento</a></li>
+      <li><a href="#inscricao">Inscrição</a></li>
+      <li><a href="#inscritos">Inscritos</a></li>
+      <li><a href="#regulamento">Regulamento</a></li>
+      <li><a href="#premiacao">Premiação</a></li>
+    </ul>
+    <a class="btn small" href="#inscricao">Inscreva-se</a>
+  </div>
+</nav>
+
+<header class="hero" id="topo">
+  <div class="wrap">
+    <div>
+      <span class="tag">INSCRIÇÕES ABERTAS</span>
+      <h1 class="display"><span class="sub">2º Campeonato de</span>Tênis de Mesa da ARCE</h1>
+      <p class="lead">A revanche chegou! Uma semana de jogos no horário do almoço, com torcida, troféus e muita resenha. Todos os níveis são bem-vindos.</p>
+      <div class="facts">
+        <div class="fact"><b>Quando</b><span>30/11 a 04/12</span></div>
+        <div class="fact"><b>Horário</b><span>Almoço</span></div>
+        <div class="fact"><b>Inscrição</b><span data-cfg="valor"></span></div>
+        <div class="fact"><b>Até</b><span data-cfg="prazo"></span></div>
+      </div>
+      <div class="cta">
+        <a class="btn" href="#inscricao">Quero me inscrever</a>
+        <a class="btn ghost" href="#regulamento">Ver regulamento</a>
+      </div>
+    </div>
+    <figure><img src="card.jpg" alt="Card de inscrições abertas do 2º Campeonato de Tênis de Mesa da ARCE" width="1080" height="1440"></figure>
+  </div>
+</header>
+
+<div class="countdown" aria-live="polite">
+  <div class="wrap">
+    <div class="label display" id="cd-label">Inscrições encerram em</div>
+    <div class="clock">
+      <div><strong id="cd-d">--</strong><small>dias</small></div>
+      <div><strong id="cd-h">--</strong><small>horas</small></div>
+      <div><strong id="cd-m">--</strong><small>min</small></div>
+    </div>
+  </div>
+</div>
+
+<section id="evento">
+  <div class="wrap">
+    <h2 class="display">O <em>evento</em></h2>
+    <p class="intro">Depois da primeira edição, a disputa volta mais organizada: chave única de simples, jogos rápidos e uma final para a ARCE inteira assistir.</p>
+    <div class="grid">
+      <div class="card"><div class="num">30/11–04/12</div><h3>Semana de jogos</h3><p>De segunda a sexta, no horário do almoço.</p></div>
+      <div class="card"><div class="num" data-cfg="vagas"></div><h3>Vagas</h3><p>Com uma mesa e jogos no almoço, as vagas são limitadas. Garanta a sua.</p></div>
+      <div class="card"><div class="num">1x1</div><h3>Simples, chave única</h3><p>Fase de grupos e mata-mata, para todo mundo jogar pelo menos duas partidas.</p></div>
+      <div class="card"><div class="num">📍</div><h3>Local</h3><p data-cfg="local"></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="inscricao">
+  <div class="wrap">
+    <h2 class="display">Como se <em>inscrever</em></h2>
+    <p class="intro">A inscrição custa <b data-cfg="valor"></b> e o valor é todo revertido para a mesa e a premiação.</p>
+    <div class="signup">
+      <form id="form-inscricao" class="card" novalidate>
+        <h3>Ficha de inscrição</h3>
+        <label>Nome completo
+          <input name="nome" autocomplete="name" required maxlength="80">
+        </label>
+        <label>Setor / Coordenadoria
+          <input name="setor" required maxlength="60">
+        </label>
+        <label>WhatsApp com DDD
+          <input name="whatsapp" type="tel" inputmode="tel" placeholder="(85) 9 9999-9999" required>
+        </label>
+        <label class="check">
+          <input type="checkbox" name="aceite" required>
+          <span>Li o regulamento e estou ciente de que minha inscrição só será confirmada após o pagamento de <b data-cfg="valor"></b> via Pix.</span>
+        </label>
+        <p class="form-error" id="form-error" role="alert"></p>
+        <button class="btn" type="submit" id="btn-enviar">Enviar inscrição</button>
+      </form>
+      <div class="card done" id="form-ok" hidden>
+        <div class="num">✓</div>
+        <h3>Inscrição recebida!</h3>
+        <p>Falta só o pagamento para garantir sua vaga.</p>
+        <button class="btn" type="button" id="reabrir-pagamento">Ir para o pagamento</button>
+      </div>
+      <ol class="steps">
+        <li><div><strong>Preencha a ficha</strong><span>Nome, setor e WhatsApp. Leva menos de 1 minuto.</span></div></li>
+        <li><div><strong>Pague <span data-cfg="valor"></span> com Pix</strong><span>Ao enviar a ficha, aparecem o QR Code e o Pix Copia e Cola, já com o valor certo.</span></div></li>
+        <li><div><strong>Envie o comprovante</strong><span>Mande o comprovante para <a data-cfg-href="whatsapp" target="_blank" rel="noopener"><span data-cfg="contatoNome"></span> no WhatsApp</a>. Sua vaga é confirmada após o pagamento.</span></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="inscritos">
+  <div class="wrap">
+    <h2 class="display">Inscritos <em>confirmados</em></h2>
+    <p class="intro">A lista é atualizada à medida que os pagamentos são confirmados.</p>
+    <p class="vagas" id="vagas-restantes"></p>
+    <ul class="inscritos" id="lista-inscritos"><li><b>Em breve</b><span>Seja o primeiro a garantir a vaga!</span></li></ul>
+  </div>
+</section>
+
+<section id="regulamento">
+  <div class="wrap">
+    <h2 class="display">Regula<em>mento</em></h2>
+    <p class="intro">O resumo do que você precisa saber. Dúvidas? Fale com a organização.</p>
+    <div class="rules">
+      <details open>
+        <summary>Participação e inscrição</summary>
+        <ul>
+          <li>Aberto a servidores, terceirizados e estagiários da ARCE.</li>
+          <li>Inscrição de <span data-cfg="valor"></span>, confirmada somente após o envio do comprovante do Pix.</li>
+          <li>Inscrições até <span data-cfg="prazo"></span> ou até acabarem as vagas, o que acontecer primeiro.</li>
+          <li>O valor não é devolvido em caso de desistência, pois é usado para a mesa e a premiação.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Formato da competição</summary>
+        <ul>
+          <li>Categoria única de simples (1x1), aberta a todos.</li>
+          <li>Fase de grupos seguida de mata-mata. Os grupos são sorteados e divulgados em <span data-cfg="sorteio"></span>.</li>
+          <li>Os melhores de cada grupo avançam para o mata-mata. A final é na sexta, 04/12.</li>
+          <li>A tabela de jogos, com dia e horário de cada partida, é divulgada junto com o sorteio.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Partidas</summary>
+        <ul>
+          <li>Melhor de 3 sets de 11 pontos. Semifinais e final em melhor de 5 sets.</li>
+          <li>Saque alterna a cada 2 pontos. Em 10 a 10, alterna a cada ponto e vence quem abrir 2 pontos de vantagem.</li>
+          <li>Os próprios jogadores marcam o placar e informam o resultado à organização.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Horários e W.O.</summary>
+        <ul>
+          <li>Os jogos acontecem no horário do almoço, conforme a tabela.</li>
+          <li>Tolerância de 10 minutos de atraso. Depois disso, a partida é declarada W.O.</li>
+          <li>Remarcações só com acordo entre os dois jogadores e aviso prévio à organização, dentro da mesma semana.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Casos omissos</summary>
+        <p>Situações não previstas são resolvidas pela comissão organizadora.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="premiacao">
+  <div class="wrap">
+    <h2 class="display">Premia<em>ção</em></h2>
+    <p class="intro">Troféus para o pódio. Com o apoio dos patrocinadores, os prêmios podem crescer.</p>
+    <div class="podium">
+      <div class="card"><div class="medal">🥈</div><h3>2º lugar</h3><p>Troféu</p></div>
+      <div class="card p1"><div class="medal">🏆</div><h3>Campeão</h3><p>Troféu de campeão</p></div>
+      <div class="card"><div class="medal">🥉</div><h3>3º lugar</h3><p>Troféu</p></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h3>Quer apoiar o campeonato?</h3>
+      <p>Estamos buscando patrocínio interno para a mesa oficial e prêmios extras. Fale com <a data-cfg-href="whatsapp" target="_blank" rel="noopener"><span data-cfg="contatoNome"></span></a>.</p>
+    </div>
+  </div>
+</section>
+
+<dialog id="pagamento" aria-labelledby="pag-titulo">
+  <button class="fechar" type="button" id="fechar-pagamento" aria-label="Fechar">×</button>
+  <div class="pag-topo">
+    <span class="tag">ETAPA 2 DE 2 · PAGAMENTO</span>
+    <h2 class="display" id="pag-titulo">Pague com <em>Pix</em></h2>
+    <p><span id="pag-nome"></span>, sua ficha foi recebida. Pague <b data-cfg="valor"></b> para confirmar sua vaga.</p>
+  </div>
+  <div class="pag-corpo">
+    <div class="qr" id="pix-qr" role="img" aria-label="QR Code do Pix"></div>
+    <div class="pag-info">
+      <p class="valor display" data-cfg="valor"></p>
+      <p class="pix-label">Favorecido: <b data-cfg="pixNome"></b></p>
+      <p class="pix-label">Abra o app do banco, escolha Pix e aponte a câmera para o QR Code. Pelo celular, use o Copia e Cola:</p>
+      <div class="pix"><code id="pix-code"></code></div>
+      <button class="btn" type="button" id="copy-pix">Copiar código Pix</button>
+    </div>
+  </div>
+  <div class="pag-rodape">
+    <p>Pagou? Envie o comprovante para <b data-cfg="contatoNome"></b>:</p>
+    <a class="btn ghost" id="enviar-comprovante" target="_blank" rel="noopener">Enviar comprovante no WhatsApp</a>
+  </div>
+</dialog>
+
+<footer>
+  <div class="logo"><img src="logo-arce.png" alt="ARCE – Agência Reguladora do Estado do Ceará" height="46"></div>
+  <div>2º Campeonato de Tênis de Mesa da ARCE · Comissão Organizadora</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+  /* =====================================================================
+     CONFIGURAÇÃO: edite só este bloco
+     ===================================================================== */
+  const CONFIG = {
+    valor: "R$ 20",
+    prazo: "25/11",
+    sorteio: "27/11",
+    vagas: 16,
+    local: "Auditório da ARCE.",
+    // Pix: o QR Code e o Copia e Cola são gerados com estes dados e o valor abaixo
+    pixChave: "davi.garcia@arce.ce.gov.br",
+    pixNome: "Davi Garcia Lopes Pinto",   // como aparece no banco, até 25 letras
+    pixCidade: "FORTALEZA",
+    pixValor: "20.00",
+    contatoNome: "Davi Garcia",
+    whatsapp: "5585998727249",          // DDI + DDD + número, só dígitos
+    // Formulário do Google que recebe as inscrições (não aparece para o inscrito)
+    formAction: "https://docs.google.com/forms/d/e/1FAIpQLSfcKVmWRzzfPd9oUow1R_x0Jkl4rf6d_Ai7oDRCRatiQjUC8w/formResponse",
+    formFields: {
+      nome: "entry.1042037279",
+      setor: "entry.321001468",
+      whatsapp: "entry.794385859",
+      aceite: "entry.1707395139"
+    },
+    aceiteTexto: "Li o regulamento e estou ciente de que minha inscrição só será confirmada após o pagamento de R$ 20 via Pix.",
+    // Planilha publicada como CSV (Arquivo > Compartilhar > Publicar na Web > CSV)
+    // com as colunas: Nome, Setor
+    inscritosCsvUrl: "",
+    fimInscricoes: "2026-11-25T23:59:00-03:00",
+    inicioJogos: "2026-11-30T12:00:00-03:00"
+  };
+  /* ===================================================================== */
+
+  document.querySelectorAll("[data-cfg]").forEach(el => {
+    el.textContent = CONFIG[el.dataset.cfg];
+  });
+  document.querySelectorAll("[data-cfg-href]").forEach(el => {
+    el.href = "https://wa.me/" + CONFIG.whatsapp;
+  });
+
+  // Pix Copia e Cola (BR Code estático, padrão do Banco Central) com valor fixo
+  function semAcento(s, max) {
+    return s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9 ]/g, "").toUpperCase().slice(0, max).trim();
+  }
+  function campo(id, valor) { return id + String(valor.length).padStart(2, "0") + valor; }
+  function crc16(str) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < str.length; i++) {
+      crc ^= str.charCodeAt(i) << 8;
+      for (let j = 0; j < 8; j++) crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
+      crc &= 0xFFFF;
+    }
+    return crc.toString(16).toUpperCase().padStart(4, "0");
+  }
+  function pixCopiaECola(nomeInscrito) {
+    // O identificador leva as iniciais do inscrito para facilitar a conferência no extrato
+    const txid = ("TM" + semAcento(nomeInscrito, 60).replace(/ /g, "")).slice(0, 25);
+    const payload =
+      campo("00", "01") +
+      campo("26", campo("00", "br.gov.bcb.pix") + campo("01", CONFIG.pixChave.trim())) +
+      campo("52", "0000") +
+      campo("53", "986") +
+      campo("54", CONFIG.pixValor) +
+      campo("58", "BR") +
+      campo("59", semAcento(CONFIG.pixNome, 25)) +
+      campo("60", semAcento(CONFIG.pixCidade, 15)) +
+      campo("62", campo("05", txid)) +
+      "6304";
+    return payload + crc16(payload);
+  }
+  const pagamento = document.getElementById("pagamento");
+  document.getElementById("fechar-pagamento").addEventListener("click", () => pagamento.close());
+  document.getElementById("reabrir-pagamento").addEventListener("click", () => pagamento.showModal());
+
+  function mostrarPix(nomeInscrito) {
+    const primeiroNome = nomeInscrito.trim().split(/\s+/)[0];
+    document.getElementById("pag-nome").textContent = primeiroNome;
+    const msg = `Olá! Segue o comprovante da inscrição de ${nomeInscrito.trim()} no 2º Campeonato de Tênis de Mesa da ARCE.`;
+    document.getElementById("enviar-comprovante").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+    const codigo = pixCopiaECola(nomeInscrito);
+    document.getElementById("pix-code").textContent = codigo;
+    const box = document.getElementById("pix-qr");
+    if (window.qrcode) {
+      const qr = qrcode(0, "M");
+      qr.addData(codigo);
+      qr.make();
+      box.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    } else {
+      box.hidden = true;
+    }
+    document.getElementById("copy-pix").onclick = async e => {
+      try {
+        await navigator.clipboard.writeText(codigo);
+        e.target.textContent = "Código copiado!";
+        setTimeout(() => (e.target.textContent = "Copiar código Pix"), 2500);
+      } catch { e.target.textContent = "Selecione o código e copie"; }
+    };
+  }
+
+  // Formulário de inscrição: envia para o Google Forms em segundo plano
+  const form = document.getElementById("form-inscricao");
+  const err = document.getElementById("form-error");
+  const fields = {
+    nome: v => v.trim().split(/\s+/).length >= 2 || "Informe nome e sobrenome.",
+    setor: v => v.trim().length >= 2 || "Informe seu setor.",
+    whatsapp: v => v.replace(/\D/g, "").length >= 10 || "Informe o WhatsApp com DDD.",
+  };
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    err.textContent = "";
+    for (const [name, check] of Object.entries(fields)) {
+      const input = form.elements[name];
+      const ok = check(input.value);
+      input.setAttribute("aria-invalid", ok !== true);
+      if (ok !== true) { err.textContent = ok; input.focus(); return; }
+    }
+    if (!form.elements.aceite.checked) { err.textContent = "Marque a confirmação para continuar."; return; }
+
+    const body = new URLSearchParams();
+    body.append(CONFIG.formFields.nome, form.elements.nome.value.trim());
+    body.append(CONFIG.formFields.setor, form.elements.setor.value.trim());
+    body.append(CONFIG.formFields.whatsapp, form.elements.whatsapp.value.trim());
+    body.append(CONFIG.formFields.aceite, CONFIG.aceiteTexto);
+
+    const btn = document.getElementById("btn-enviar");
+    btn.disabled = true; btn.textContent = "Enviando…";
+    try {
+      // O Google não devolve confirmação legível para outros sites (no-cors);
+      // só falhas de rede chegam aqui como erro.
+      await fetch(CONFIG.formAction, { method: "POST", mode: "no-cors", body });
+      mostrarPix(form.elements.nome.value);
+      form.hidden = true;
+      document.getElementById("form-ok").hidden = false;
+      pagamento.showModal();
+    } catch {
+      err.textContent = "Não foi possível enviar. Verifique sua conexão e tente de novo.";
+      btn.disabled = false; btn.textContent = "Enviar inscrição";
+    }
+  });
+
+  // Contagem regressiva
+  function tick() {
+    const now = Date.now();
+    const fim = Date.parse(CONFIG.fimInscricoes);
+    const jogos = Date.parse(CONFIG.inicioJogos);
+    let alvo = fim, label = "Inscrições encerram em";
+    if (now > fim) { alvo = jogos; label = "Os jogos começam em"; }
+    if (now > jogos) { document.getElementById("cd-label").textContent = "Bola em jogo! 🏓"; document.querySelector(".clock").style.display = "none"; return; }
+    const s = Math.max(0, Math.floor((alvo - now) / 1000));
+    document.getElementById("cd-label").textContent = label;
+    document.getElementById("cd-d").textContent = Math.floor(s / 86400);
+    document.getElementById("cd-h").textContent = String(Math.floor(s % 86400 / 3600)).padStart(2, "0");
+    document.getElementById("cd-m").textContent = String(Math.floor(s % 3600 / 60)).padStart(2, "0");
+  }
+  tick(); setInterval(tick, 30000);
+
+  // Lista de inscritos (planilha publicada em CSV)
+  function parseCsv(text) {
+    const rows = []; let row = [], cell = "", q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) { if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') q = false; else cell += c; }
+      else if (c === '"') q = true;
+      else if (c === ",") { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += c;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function renderVagas(n) {
+    const rest = Math.max(0, CONFIG.vagas - n);
+    document.getElementById("vagas-restantes").textContent =
+      rest > 0 ? `${n} inscrito${n === 1 ? "" : "s"} · ${rest} vaga${rest === 1 ? "" : "s"} restante${rest === 1 ? "" : "s"}` : "Vagas esgotadas!";
+  }
+  if (CONFIG.inscritosCsvUrl) {
+    fetch(CONFIG.inscritosCsvUrl).then(r => r.text()).then(t => {
+      const rows = parseCsv(t).slice(1).filter(r => r[0] && r[0].trim());
+      const ul = document.getElementById("lista-inscritos");
+      ul.innerHTML = "";
+      rows.forEach(r => {
+        const li = document.createElement("li");
+        const b = document.createElement("b"); b.textContent = r[0].trim();
+        const s = document.createElement("span"); s.textContent = (r[1] || "").trim();
+        li.append(b, s); ul.append(li);
+      });
+      if (!rows.length) ul.innerHTML = "<li><b>Em breve</b><span>Seja o primeiro a garantir a vaga!</span></li>";
+      renderVagas(rows.length);
+    }).catch(() => renderVagas(0));
+  } else {
+    renderVagas(0);
+  }
+</script>
+</body>
+</html>
