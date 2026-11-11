@@ -55,7 +55,10 @@
   }
   nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 60px; }
   nav .brand { font-family: "Barlow Condensed", sans-serif; font-style: italic; font-weight: 800; font-size: 22px; color: var(--white); text-decoration: none; }
-  nav .brand span { color: var(--orange); }
+  nav .brand .brand-arce { color: var(--orange); }
+  /* ordinal desenhado como "o" elevado: o "º" desta fonte tem um traço embaixo e parece "ª" */
+  .ord { font-style: inherit; font-size: .55em; vertical-align: .75em; line-height: 0; margin-left: .04em; text-transform: lowercase; }
+  @media (max-width: 1080px) { nav .brand .brand-longo { display: none; } }
   nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; }
   nav ul a { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 15px; }
   nav ul a:hover { color: var(--white); }
@@ -268,7 +271,7 @@
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#topo">2º TÊNIS DE MESA <span>ARCE</span></a>
+    <a class="brand" href="#topo"><span class="brand-longo">2<i class="ord">o</i> CAMPEONATO DE </span>TÊNIS DE MESA <span class="brand-arce">ARCE</span></a>
     <ul>
       <li><a href="#evento">O evento</a></li>
       <li><a href="#inscricao">Inscrição</a></li>
@@ -284,7 +287,7 @@
   <div class="wrap">
     <div>
       <span class="tag" id="hero-tag">INSCRIÇÕES ABERTAS</span>
-      <h1 class="display"><span class="sub">2º Campeonato de</span>Tênis de Mesa da ARCE</h1>
+      <h1 class="display"><span class="sub">2<i class="ord">o</i> Campeonato de</span>Tênis de Mesa da ARCE</h1>
       <p class="lead">A revanche chegou! Uma semana de jogos no horário do almoço, com torcida, troféus e muita resenha. Todos os níveis são bem-vindos.</p>
       <div class="facts">
         <div class="fact"><b>Quando</b><span>30/11 a 04/12</span></div>
