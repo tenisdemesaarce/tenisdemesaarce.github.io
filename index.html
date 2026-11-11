@@ -166,6 +166,20 @@
   .form-error { color: #ff8f8f; margin: 0; min-height: 1em; font-weight: 600; }
   #form-inscricao .btn { justify-self: start; }
   #form-inscricao .btn[disabled] { opacity: .6; cursor: wait; }
+  .fact.destaque { border-color: rgba(61, 181, 84, .6); background: rgba(61, 181, 84, .12); }
+  .fact.destaque span { color: var(--green); }
+  .vagas-banner {
+    display: grid; gap: 10px; margin: -12px 0 28px; padding: 16px 20px;
+    background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius);
+  }
+  .vagas-texto { font-size: 17px; color: var(--muted); }
+  .vagas-texto strong { font: 800 italic 34px/1 "Barlow Condensed", sans-serif; color: var(--green); margin-right: 4px; }
+  .vagas-barra { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+  .vagas-preenchido { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--green), var(--orange)); transition: width .6s ease; }
+  .fechado { text-align: center; padding: 36px 24px; display: grid; gap: 12px; justify-items: center; border-color: rgba(247, 153, 58, .6); }
+  .fechado .num { font-size: 48px; margin: 0; }
+  .fechado h3 { font-size: 26px; margin: 0; }
+  .fechado p { margin: 0; max-width: 520px; }
   .done { text-align: center; padding: 32px 24px; border-color: rgba(61, 181, 84, .6); display: grid; gap: 12px; justify-items: center; }
   .done .num { color: var(--green); font-size: 56px; margin: 0; }
   .done p { margin: 0; }
@@ -269,17 +283,18 @@
 <header class="hero" id="topo">
   <div class="wrap">
     <div>
-      <span class="tag">INSCRIÇÕES ABERTAS</span>
+      <span class="tag" id="hero-tag">INSCRIÇÕES ABERTAS</span>
       <h1 class="display"><span class="sub">2º Campeonato de</span>Tênis de Mesa da ARCE</h1>
       <p class="lead">A revanche chegou! Uma semana de jogos no horário do almoço, com torcida, troféus e muita resenha. Todos os níveis são bem-vindos.</p>
       <div class="facts">
         <div class="fact"><b>Quando</b><span>30/11 a 04/12</span></div>
-        <div class="fact"><b>Horário</b><span>Almoço</span></div>
+        <div class="fact"><b>Horário</b><span>12h às 13h</span></div>
         <div class="fact"><b>Inscrição</b><span data-cfg="valor"></span></div>
         <div class="fact"><b>Até</b><span data-cfg="prazo"></span></div>
+        <div class="fact destaque"><b>Vagas restantes</b><span data-vagas-restantes>–</span></div>
       </div>
       <div class="cta">
-        <a class="btn" href="#inscricao">Quero me inscrever</a>
+        <a class="btn" href="#inscricao" id="hero-cta">Quero me inscrever</a>
         <a class="btn ghost" href="#regulamento">Ver regulamento</a>
       </div>
     </div>
@@ -315,7 +330,17 @@
   <div class="wrap">
     <h2 class="display">Como se <em>inscrever</em></h2>
     <p class="intro">A inscrição custa <b data-cfg="valor"></b> e o valor é todo revertido para a mesa e a premiação.</p>
-    <div class="signup">
+    <div class="vagas-banner" id="vagas-banner">
+      <div class="vagas-texto"><strong data-vagas-restantes>–</strong> <span id="vagas-banner-label">vagas restantes de <span data-cfg="vagas"></span></span></div>
+      <div class="vagas-barra" aria-hidden="true"><div class="vagas-preenchido" id="vagas-preenchido"></div></div>
+    </div>
+    <div class="card fechado" id="inscricoes-fechadas" hidden>
+      <div class="num">🔒</div>
+      <h3 id="fechado-titulo">Inscrições encerradas</h3>
+      <p id="fechado-texto"></p>
+      <a class="btn ghost" href="#inscritos">Ver inscritos confirmados</a>
+    </div>
+    <div class="signup" id="signup">
       <form id="form-inscricao" class="card" novalidate>
         <h3>Ficha de inscrição</h3>
         <label>Nome completo
@@ -628,10 +653,37 @@
     if (cell || row.length) { row.push(cell); rows.push(row); }
     return rows;
   }
+  // Fecha as inscrições: por vagas esgotadas ou fim do prazo
+  let inscricoesFechadas = false;
+  function fecharInscricoes(motivo) {
+    if (inscricoesFechadas) return;
+    inscricoesFechadas = true;
+    document.getElementById("signup").hidden = true;
+    document.getElementById("inscricoes-fechadas").hidden = false;
+    document.getElementById("fechado-titulo").textContent =
+      motivo === "lotado" ? "Inscrições encerradas: vagas esgotadas!" : "Inscrições encerradas";
+    document.getElementById("fechado-texto").textContent = motivo === "lotado"
+      ? `Todas as ${CONFIG.vagas} vagas foram preenchidas e não estamos mais aceitando inscrições. Obrigado pelo interesse! Acompanhe a tabela de jogos aqui no site.`
+      : `O prazo de inscrição terminou em ${CONFIG.prazo}. Obrigado pelo interesse! Acompanhe a tabela de jogos aqui no site.`;
+    const tag = document.getElementById("hero-tag");
+    tag.textContent = motivo === "lotado" ? "VAGAS ESGOTADAS" : "INSCRIÇÕES ENCERRADAS";
+    tag.style.background = "var(--orange)";
+    const cta = document.getElementById("hero-cta");
+    cta.textContent = "Ver inscritos";
+    cta.href = "#inscritos";
+    document.querySelectorAll('nav a.btn').forEach(a => { a.textContent = "Inscritos"; a.href = "#inscritos"; });
+  }
+  if (Date.now() > Date.parse(CONFIG.fimInscricoes)) fecharInscricoes("prazo");
+
   function renderVagas(n) {
     const rest = Math.max(0, CONFIG.vagas - n);
+    document.querySelectorAll("[data-vagas-restantes]").forEach(el => (el.textContent = rest));
+    document.getElementById("vagas-banner-label").textContent =
+      rest === 1 ? `vaga restante de ${CONFIG.vagas}. É a última!` : `vagas restantes de ${CONFIG.vagas}`;
+    document.getElementById("vagas-preenchido").style.width = `${Math.min(100, (n / CONFIG.vagas) * 100)}%`;
     document.getElementById("vagas-restantes").textContent =
-      rest > 0 ? `${n} inscrito${n === 1 ? "" : "s"} · ${rest} vaga${rest === 1 ? "" : "s"} restante${rest === 1 ? "" : "s"}` : "Vagas esgotadas!";
+      rest > 0 ? `${n} inscrito${n === 1 ? "" : "s"} · ${rest} vaga${rest === 1 ? "" : "s"} restante${rest === 1 ? "" : "s"}` : `${n} inscritos · vagas esgotadas`;
+    if (rest === 0) fecharInscricoes("lotado");
   }
   if (CONFIG.inscritosCsvUrl) {
     fetch(CONFIG.inscritosCsvUrl).then(r => r.text()).then(t => {
