@@ -183,6 +183,18 @@
     background: rgba(255, 255, 255, .08); color: var(--white); font-size: 26px; line-height: 1; cursor: pointer;
   }
   .pag-topo { padding: 28px 28px 8px; background: linear-gradient(135deg, var(--navy-700), var(--navy-800)); }
+  .sucesso {
+    display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start;
+    background: rgba(61, 181, 84, .14); border: 1px solid rgba(61, 181, 84, .55);
+    border-radius: 12px; padding: 14px 16px; margin: 0 40px 18px 0;
+  }
+  .sucesso-icone {
+    display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+    background: var(--green); color: var(--navy-900); font-weight: 800; font-size: 20px;
+  }
+  .sucesso strong { display: block; font-size: 18px; margin-bottom: 2px; }
+  .sucesso span { color: var(--muted); font-size: 15px; }
+  .sucesso span span { color: var(--white); font-weight: 600; }
   .pag-topo h2 { margin: 14px 0 8px; font-size: 44px; }
   .pag-topo p { margin: 0 0 12px; color: var(--muted); }
   .pag-corpo { display: grid; grid-template-columns: auto 1fr; gap: 24px; padding: 20px 28px; align-items: start; }
@@ -324,8 +336,8 @@
       </form>
       <div class="card done" id="form-ok" hidden>
         <div class="num">✓</div>
-        <h3>Inscrição recebida!</h3>
-        <p>Falta só o pagamento para garantir sua vaga.</p>
+        <h3>Pré-inscrição realizada!</h3>
+        <p>Sua inscrição será confirmada após a validação do pagamento.</p>
         <button class="btn" type="button" id="reabrir-pagamento">Ir para o pagamento</button>
       </div>
       <ol class="steps">
@@ -412,9 +424,16 @@
 <dialog id="pagamento" aria-labelledby="pag-titulo">
   <button class="fechar" type="button" id="fechar-pagamento" aria-label="Fechar">×</button>
   <div class="pag-topo">
+    <div class="sucesso" role="status">
+      <span class="sucesso-icone" aria-hidden="true">✓</span>
+      <div>
+        <strong>Pré-inscrição realizada com sucesso!</strong>
+        <span><span id="pag-nome"></span>, recebemos sua ficha. Sua inscrição será confirmada assim que o pagamento for validado pela organização, e você receberá a confirmação pelo WhatsApp.</span>
+      </div>
+    </div>
     <span class="tag">ETAPA 2 DE 2 · PAGAMENTO</span>
     <h2 class="display" id="pag-titulo">Pague com <em>Pix</em></h2>
-    <p><span id="pag-nome"></span>, sua ficha foi recebida. Pague <b data-cfg="valor"></b> para confirmar sua vaga.</p>
+    <p>Pague <b data-cfg="valor"></b> e envie o comprovante para garantir sua vaga.</p>
   </div>
   <div class="pag-corpo">
     <div class="qr" id="pix-qr" role="img" aria-label="QR Code do Pix"></div>
