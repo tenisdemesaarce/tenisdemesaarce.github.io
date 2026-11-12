@@ -317,6 +317,7 @@
       <div><strong id="cd-d">--</strong><small>dias</small></div>
       <div><strong id="cd-h">--</strong><small>horas</small></div>
       <div><strong id="cd-m">--</strong><small>min</small></div>
+      <div><strong id="cd-s">--</strong><small>seg</small></div>
     </div>
   </div>
 </div>
@@ -644,8 +645,9 @@
     document.getElementById("cd-d").textContent = Math.floor(s / 86400);
     document.getElementById("cd-h").textContent = String(Math.floor(s % 86400 / 3600)).padStart(2, "0");
     document.getElementById("cd-m").textContent = String(Math.floor(s % 3600 / 60)).padStart(2, "0");
+    document.getElementById("cd-s").textContent = String(s % 60).padStart(2, "0");
   }
-  tick(); setInterval(tick, 30000);
+  tick(); setInterval(tick, 1000);
 
   // Lista de inscritos (planilha publicada em CSV)
   function parseCsv(text) {
