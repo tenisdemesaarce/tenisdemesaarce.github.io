@@ -176,6 +176,18 @@
   #form-inscricao .btn[disabled] { opacity: .6; cursor: wait; }
   .fact.destaque { border-color: rgba(61, 181, 84, .6); background: rgba(61, 181, 84, .12); }
   .fact.destaque span { color: var(--green); }
+  /* estado de urgência: metade das vagas ou menos */
+  .fact.destaque.urgente { border-color: var(--orange); background: rgba(247, 153, 58, .14); }
+  .fact.destaque.urgente b { color: var(--orange); }
+  .fact.destaque.urgente span { color: var(--white); }
+  .fact.destaque.urgente b::before {
+    content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--orange); margin-right: 6px; vertical-align: 1px; animation: pulso 1.2s ease-in-out infinite;
+  }
+  .vagas-banner.urgente { border-color: var(--orange); background: rgba(247, 153, 58, .10); }
+  .vagas-banner.urgente strong { color: var(--orange); }
+  @keyframes pulso { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+  @media (prefers-reduced-motion: reduce) { .fact.destaque.urgente b::before { animation: none; } }
   .vagas-banner {
     display: grid; gap: 10px; margin: -12px 0 28px; padding: 16px 20px;
     background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius);
@@ -299,7 +311,7 @@
         <div class="fact"><b>Horário</b><span>12h às 13h</span></div>
         <div class="fact"><b>Inscrição</b><span data-cfg="valor"></span></div>
         <div class="fact"><b>Até</b><span data-cfg="prazo"></span></div>
-        <div class="fact destaque"><b>Vagas restantes</b><span data-vagas-restantes>–</span></div>
+        <div class="fact destaque" id="fact-vagas"><b id="fact-vagas-label">Vagas restantes</b><span id="fact-vagas-valor">–</span></div>
       </div>
       <div class="cta">
         <a class="btn" href="#inscricao" id="hero-cta">Quero me inscrever</a>
@@ -688,8 +700,16 @@
   function renderVagas(n) {
     const rest = Math.max(0, CONFIG.vagas - n);
     document.querySelectorAll("[data-vagas-restantes]").forEach(el => (el.textContent = rest));
+    const urgente = rest > 0 && rest <= Math.ceil(CONFIG.vagas / 2);
+    document.getElementById("fact-vagas").classList.toggle("urgente", urgente);
+    document.getElementById("vagas-banner").classList.toggle("urgente", urgente);
+    document.getElementById("fact-vagas-label").textContent = urgente ? "ÚLTIMAS VAGAS!" : "Vagas restantes";
+    document.getElementById("fact-vagas-valor").textContent =
+      rest === 1 ? "É a última!" : urgente ? `Só restam ${rest}` : rest;
     document.getElementById("vagas-banner-label").textContent =
-      rest === 1 ? `vaga restante de ${CONFIG.vagas}. É a última!` : `vagas restantes de ${CONFIG.vagas}`;
+      rest === 1 ? `vaga restante de ${CONFIG.vagas}. É a última!`
+      : urgente ? `vagas restantes de ${CONFIG.vagas}. Corra, estão acabando!`
+      : `vagas restantes de ${CONFIG.vagas}`;
     document.getElementById("vagas-preenchido").style.width = `${Math.min(100, (n / CONFIG.vagas) * 100)}%`;
     document.getElementById("vagas-restantes").textContent =
       rest > 0 ? `${n} inscrito${n === 1 ? "" : "s"} · ${rest} vaga${rest === 1 ? "" : "s"} restante${rest === 1 ? "" : "s"}` : `${n} inscritos · vagas esgotadas`;
