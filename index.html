@@ -178,7 +178,8 @@
   .fact.destaque span { color: var(--green); }
   /* estado de urgência: metade das vagas ou menos */
   .fact.destaque.urgente { border-color: var(--orange); background: rgba(247, 153, 58, .14); }
-  .fact.destaque.urgente b { color: var(--orange); }
+  .fact.destaque.urgente { display: flex; align-items: center; }
+  .fact.destaque.urgente b { color: var(--orange); font-size: 18px; letter-spacing: .4px; }
   .fact.destaque.urgente span { color: var(--white); }
   .fact.destaque.urgente b::before {
     content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
@@ -703,9 +704,11 @@
     const urgente = rest > 0 && rest <= Math.ceil(CONFIG.vagas / 2);
     document.getElementById("fact-vagas").classList.toggle("urgente", urgente);
     document.getElementById("vagas-banner").classList.toggle("urgente", urgente);
-    document.getElementById("fact-vagas-label").textContent = urgente ? "ÚLTIMAS VAGAS!" : "Vagas restantes";
-    document.getElementById("fact-vagas-valor").textContent =
-      rest === 1 ? "É a última!" : urgente ? `Só restam ${rest}` : rest;
+    document.getElementById("fact-vagas-label").textContent =
+      rest === 1 ? "ÚLTIMA VAGA!" : urgente ? "ÚLTIMAS VAGAS!" : "Vagas restantes";
+    const valor = document.getElementById("fact-vagas-valor");
+    valor.textContent = rest;
+    valor.hidden = urgente;   // no modo urgente o quadro mostra só o aviso, sem a quantidade
     document.getElementById("vagas-banner-label").textContent =
       rest === 1 ? `vaga restante de ${CONFIG.vagas}. É a última!`
       : urgente ? `vagas restantes de ${CONFIG.vagas}. Corra, estão acabando!`
