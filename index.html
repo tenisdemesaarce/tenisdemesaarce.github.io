@@ -545,7 +545,7 @@
     // com as colunas: Nome, Setor
     inscritosCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcmgJ5Lu7GUVjhQGLLzu6wJg0W1RLDbAslpSimme3mrVimWdqvRSYoew00spy43lnV5hgP1VR01rp9/pub?gid=91741312&single=true&output=csv",
     fimInscricoes: "2026-11-25T23:59:00-03:00",
-    fimListaEspera: "2026-11-29T23:59:00-03:00",   // com as vagas esgotadas, a lista de espera fica aberta até aqui
+    fimListaEspera: "2026-11-30T23:59:00-03:00",   // com as vagas esgotadas, a lista de espera fica aberta até aqui
     inicioJogos: "2026-11-30T12:00:00-03:00"
   };
   /* ===================================================================== */
@@ -669,7 +669,7 @@
     const fim = Date.parse(CONFIG.fimInscricoes);
     const jogos = Date.parse(CONFIG.inicioJogos);
     let alvo = fim, label = "Inscrições encerram em";
-    if (modoEspera) { alvo = Date.parse(CONFIG.fimListaEspera); label = "Lista de espera encerra em"; }
+    if (modoEspera) { alvo = jogos; label = "O campeonato inicia em"; }
     if (now > alvo) { alvo = jogos; label = "Os jogos começam em"; }
     if (now > jogos) { document.getElementById("cd-label").textContent = "Bola em jogo! 🏓"; document.querySelector(".clock").style.display = "none"; return; }
     const s = Math.max(0, Math.floor((alvo - now) / 1000));
@@ -726,8 +726,8 @@
   function decidirEstado(rest) {
     const agora = Date.now();
     if (agora > Date.parse(CONFIG.fimListaEspera)) return fecharInscricoes(rest === 0 ? "lotado" : "prazo");
-    if (rest === 0) return abrirListaEspera();
-    if (agora > Date.parse(CONFIG.fimInscricoes)) return fecharInscricoes("prazo");
+    // vagas esgotadas, ou prazo normal encerrado (houve desistência após lotar): segue a lista de espera
+    if (rest === 0 || agora > Date.parse(CONFIG.fimInscricoes)) return abrirListaEspera();
   }
 
   // Fecha as inscrições: por vagas esgotadas ou fim do prazo
