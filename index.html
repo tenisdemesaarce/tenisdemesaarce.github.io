@@ -197,6 +197,11 @@
   .vagas-texto strong { font: 800 italic 34px/1 "Barlow Condensed", sans-serif; color: var(--green); margin-right: 4px; }
   .vagas-barra { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, .1); overflow: hidden; }
   .vagas-preenchido { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--green), var(--orange)); transition: width .6s ease; }
+  .form-aviso {
+    margin: -6px 0 0; padding: 12px 14px; border-radius: 10px; font-size: 15px;
+    background: rgba(247, 153, 58, .12); border: 1px solid rgba(247, 153, 58, .5); color: var(--white);
+  }
+  .fact.destaque.espera { flex-direction: column; align-items: flex-start; }
   .fechado { text-align: center; padding: 36px 24px; display: grid; gap: 12px; justify-items: center; border-color: rgba(247, 153, 58, .6); }
   .fechado .num { font-size: 48px; margin: 0; }
   .fechado h3 { font-size: 26px; margin: 0; }
@@ -364,7 +369,8 @@
     </div>
     <div class="signup" id="signup">
       <form id="form-inscricao" class="card" novalidate>
-        <h3>Ficha de inscrição</h3>
+        <h3 id="form-titulo">Ficha de inscrição</h3>
+        <p class="form-aviso" id="form-aviso" hidden>As <span data-cfg="vagas"></span> vagas foram preenchidas, mas ainda dá para entrar na <b>lista de espera</b>. Se alguém desistir, chamamos pela ordem da lista, pelo WhatsApp. Você só paga se for chamado(a).</p>
         <label>Nome completo
           <input name="nome" autocomplete="name" required maxlength="80">
         </label>
@@ -376,7 +382,7 @@
         </label>
         <label class="check">
           <input type="checkbox" name="aceite" required>
-          <span>Li o regulamento e estou ciente de que minha inscrição só será confirmada após o pagamento de <b data-cfg="valor"></b> via Pix.</span>
+          <span id="aceite-texto">Li o regulamento e estou ciente de que minha inscrição só será confirmada após o pagamento de <b data-cfg="valor"></b> via Pix.</span>
         </label>
         <p class="form-error" id="form-error" role="alert"></p>
         <button class="btn" type="submit" id="btn-enviar">Enviar inscrição</button>
@@ -387,7 +393,12 @@
         <p>Sua inscrição será confirmada após a validação do pagamento.</p>
         <button class="btn" type="button" id="reabrir-pagamento">Ir para o pagamento</button>
       </div>
-      <ol class="steps">
+      <div class="card done" id="espera-ok" hidden>
+        <div class="num">✓</div>
+        <h3>Você está na lista de espera!</h3>
+        <p>Recebemos seus dados. Se abrir uma vaga, entraremos em contato pelo WhatsApp informado, seguindo a ordem da lista. Por enquanto, não é preciso pagar nada.</p>
+      </div>
+      <ol class="steps" id="passos-pagamento">
         <li><div><strong>Preencha a ficha</strong><span>Nome, setor e WhatsApp. Leva menos de 1 minuto.</span></div></li>
         <li><div><strong>Pague <span data-cfg="valor"></span> com Pix</strong><span>Ao enviar a ficha, aparecem o QR Code e o Pix Copia e Cola, já com o valor certo.</span></div></li>
         <li><div><strong>Envie o comprovante</strong><span>Mande o comprovante para <a data-cfg-href="whatsapp" target="_blank" rel="noopener"><span data-cfg="contatoNome"></span> no WhatsApp</a>. Sua vaga é confirmada após o pagamento.</span></div></li>
@@ -534,6 +545,7 @@
     // com as colunas: Nome, Setor
     inscritosCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcmgJ5Lu7GUVjhQGLLzu6wJg0W1RLDbAslpSimme3mrVimWdqvRSYoew00spy43lnV5hgP1VR01rp9/pub?gid=91741312&single=true&output=csv",
     fimInscricoes: "2026-11-25T23:59:00-03:00",
+    fimListaEspera: "2026-11-29T23:59:00-03:00",   // com as vagas esgotadas, a lista de espera fica aberta até aqui
     inicioJogos: "2026-11-30T12:00:00-03:00"
   };
   /* ===================================================================== */
@@ -635,13 +647,19 @@
       // O Google não devolve confirmação legível para outros sites (no-cors);
       // só falhas de rede chegam aqui como erro.
       await fetch(CONFIG.formAction, { method: "POST", mode: "no-cors", body });
-      mostrarPix(form.elements.nome.value);
       form.hidden = true;
-      document.getElementById("form-ok").hidden = false;
-      pagamento.showModal();
+      if (modoEspera) {
+        // lista de espera: sem pagamento; a planilha marca a pessoa como "Lista de espera Nº"
+        document.getElementById("espera-ok").hidden = false;
+        document.getElementById("espera-ok").scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        mostrarPix(form.elements.nome.value);
+        document.getElementById("form-ok").hidden = false;
+        pagamento.showModal();
+      }
     } catch {
       err.textContent = "Não foi possível enviar. Verifique sua conexão e tente de novo.";
-      btn.disabled = false; btn.textContent = "Enviar inscrição";
+      btn.disabled = false; btn.textContent = modoEspera ? "Entrar na lista de espera" : "Enviar inscrição";
     }
   });
 
@@ -651,7 +669,8 @@
     const fim = Date.parse(CONFIG.fimInscricoes);
     const jogos = Date.parse(CONFIG.inicioJogos);
     let alvo = fim, label = "Inscrições encerram em";
-    if (now > fim) { alvo = jogos; label = "Os jogos começam em"; }
+    if (modoEspera) { alvo = Date.parse(CONFIG.fimListaEspera); label = "Lista de espera encerra em"; }
+    if (now > alvo) { alvo = jogos; label = "Os jogos começam em"; }
     if (now > jogos) { document.getElementById("cd-label").textContent = "Bola em jogo! 🏓"; document.querySelector(".clock").style.display = "none"; return; }
     const s = Math.max(0, Math.floor((alvo - now) / 1000));
     document.getElementById("cd-label").textContent = label;
@@ -676,6 +695,41 @@
     if (cell || row.length) { row.push(cell); rows.push(row); }
     return rows;
   }
+  // Vagas esgotadas: a ficha vira inscrição na lista de espera (sem pagamento)
+  var modoEspera = false;   // "var" porque a contagem regressiva lê isto antes desta linha rodar
+  function abrirListaEspera() {
+    if (modoEspera) return;
+    modoEspera = true;
+    document.getElementById("form-titulo").textContent = "Lista de espera";
+    document.getElementById("form-aviso").hidden = false;
+    document.getElementById("aceite-texto").textContent =
+      "Estou ciente de que entro na lista de espera e só farei o pagamento se for chamado(a) para uma vaga.";
+    document.getElementById("btn-enviar").textContent = "Entrar na lista de espera";
+    document.getElementById("passos-pagamento").hidden = true;
+    document.getElementById("vagas-banner-label").textContent = `vagas restantes de ${CONFIG.vagas}. Lista de espera aberta!`;
+    const tag = document.getElementById("hero-tag");
+    tag.textContent = "VAGAS ESGOTADAS · LISTA DE ESPERA";
+    tag.style.background = "var(--orange)";
+    const cta = document.getElementById("hero-cta");
+    cta.textContent = "Entrar na lista de espera";
+    cta.href = "#inscricao";
+    document.querySelectorAll('nav a.btn').forEach(a => { a.textContent = "Lista de espera"; a.href = "#inscricao"; });
+    document.getElementById("fact-vagas").classList.add("urgente", "espera");
+    document.getElementById("vagas-banner").classList.add("urgente");
+    document.getElementById("fact-vagas-label").textContent = "VAGAS ESGOTADAS";
+    document.getElementById("fact-vagas-valor").hidden = false;
+    document.getElementById("fact-vagas-valor").textContent = "Lista de espera aberta";
+    tick();
+  }
+
+  // Decide o estado da inscrição: aberta, lista de espera ou encerrada
+  function decidirEstado(rest) {
+    const agora = Date.now();
+    if (agora > Date.parse(CONFIG.fimListaEspera)) return fecharInscricoes(rest === 0 ? "lotado" : "prazo");
+    if (rest === 0) return abrirListaEspera();
+    if (agora > Date.parse(CONFIG.fimInscricoes)) return fecharInscricoes("prazo");
+  }
+
   // Fecha as inscrições: por vagas esgotadas ou fim do prazo
   let inscricoesFechadas = false;
   function fecharInscricoes(motivo) {
@@ -696,7 +750,6 @@
     cta.href = "#inscritos";
     document.querySelectorAll('nav a.btn').forEach(a => { a.textContent = "Inscritos"; a.href = "#inscritos"; });
   }
-  if (Date.now() > Date.parse(CONFIG.fimInscricoes)) fecharInscricoes("prazo");
 
   function renderVagas(n) {
     const rest = Math.max(0, CONFIG.vagas - n);
@@ -716,7 +769,7 @@
     document.getElementById("vagas-preenchido").style.width = `${Math.min(100, (n / CONFIG.vagas) * 100)}%`;
     document.getElementById("vagas-restantes").textContent =
       rest > 0 ? `${n} inscrito${n === 1 ? "" : "s"} · ${rest} vaga${rest === 1 ? "" : "s"} restante${rest === 1 ? "" : "s"}` : `${n} inscritos · vagas esgotadas`;
-    if (rest === 0) fecharInscricoes("lotado");
+    decidirEstado(rest);
   }
   if (CONFIG.inscritosCsvUrl) {
     fetch(CONFIG.inscritosCsvUrl).then(r => r.text()).then(t => {
