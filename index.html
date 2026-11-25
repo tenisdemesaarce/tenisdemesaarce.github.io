@@ -78,7 +78,8 @@
   .btn.small { padding: 8px 16px; font-size: 14px; }
   .btn.ghost { background: transparent; color: var(--white); box-shadow: inset 0 0 0 2px var(--line); }
   .btn.ghost:hover { box-shadow: inset 0 0 0 2px var(--white); }
-  @media (max-width: 760px) { nav ul { display: none; } }
+  nav ul a, nav .brand, nav .btn { white-space: nowrap; }
+  @media (max-width: 920px) { nav ul { display: none; } }
 
   /* ---------- hero ---------- */
   .hero {
@@ -266,6 +267,46 @@
   .inscritos li span { color: var(--muted); font-size: 14px; }
   .vagas { font-weight: 700; color: var(--green); margin: -18px 0 24px; }
 
+  /* fórmula de disputa */
+  .fases { margin-bottom: 48px; grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 960px) { .fases, .grupos { grid-template-columns: repeat(2, 1fr) !important; } }
+  @media (max-width: 520px) { .fases, .grupos { grid-template-columns: 1fr !important; } }
+  .fases .card p b { color: var(--white); font-weight: 600; }
+  .sub-titulo { font-size: clamp(26px, 3.4vw, 34px); margin: 0 0 8px; }
+  .sub-intro { color: var(--muted); margin: 0 0 20px; }
+  .grupos { display: grid; gap: 16px; grid-template-columns: repeat(4, 1fr); margin-bottom: 48px; }
+  .grupo { background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .grupo h4 { margin: 0; padding: 12px 16px; background: var(--orange); color: var(--navy-900); font-size: 26px; }
+  .grupo ol { list-style: none; margin: 0; padding: 6px 16px; }
+  .grupo li { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
+  .grupo li:last-child { border-bottom: 0; }
+  .grupo li b { font: 800 italic 18px/1 "Barlow Condensed", sans-serif; color: var(--orange); width: 26px; }
+  .grupo li span { color: var(--muted); font-style: italic; }
+  .grupo .rodape { padding: 10px 16px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+  .chave-scroll { overflow-x: auto; padding-bottom: 6px; }
+  .arraste { display: none; font-size: 14px; color: var(--muted); margin: -10px 0 12px; }
+  @media (max-width: 700px) { .arraste { display: block; } }
+  .chave { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); column-gap: 36px; min-width: 640px; }
+  .fase { display: flex; flex-direction: column; }
+  .fase h4 { margin: 0 0 12px; font-size: 22px; color: var(--orange); }
+  .fase h4 small { display: block; font: 600 13px/1.3 "Barlow", sans-serif; text-transform: none; letter-spacing: 0; color: var(--muted); }
+  .fase-corpo { flex: 1; display: flex; flex-direction: column; }
+  .par { position: relative; flex: 1; display: flex; flex-direction: column; }
+  .lugar { flex: 1; display: flex; align-items: center; padding: 8px 0; position: relative; }
+  .jogo { width: 100%; position: relative; background: var(--navy-900); border: 1px solid var(--line); border-radius: 10px; }
+  .jogo .id { display: block; padding: 6px 12px 0; font-size: 12px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); }
+  .jogo .slot { padding: 6px 12px; }
+  .jogo .slot + .slot { border-top: 1px solid var(--line); }
+  .jogo.final { border: 2px solid var(--orange); background: rgba(247, 153, 58, .12); }
+  .jogo.final .slot { padding: 10px 12px; font-weight: 600; }
+  /* linhas do chaveamento */
+  .fase:not(:last-child) .jogo::after { content: ""; position: absolute; top: 50%; right: -19px; width: 18px; border-top: 2px solid rgba(255, 255, 255, .28); }
+  .fase:not(:last-child) .par::after { content: ""; position: absolute; top: 25%; bottom: 25%; right: -19px; border-right: 2px solid rgba(255, 255, 255, .28); }
+  .fase:not(:last-child) .par::before { content: ""; position: absolute; top: 50%; right: -37px; width: 18px; border-top: 2px solid rgba(255, 255, 255, .28); }
+  .terceiro { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .terceiro h3 { margin: 0; }
+  .terceiro p { margin: 0; }
+
   /* regulamento */
   .rules { display: grid; gap: 12px; }
   details {
@@ -299,6 +340,7 @@
       <li><a href="#evento">O evento</a></li>
       <li><a href="#inscricao">Inscrição</a></li>
       <li><a href="#inscritos">Inscritos</a></li>
+      <li><a href="#disputa">Disputa</a></li>
       <li><a href="#regulamento">Regulamento</a></li>
       <li><a href="#premiacao">Premiação</a></li>
     </ul>
@@ -347,7 +389,7 @@
     <div class="grid">
       <div class="card"><div class="num">30/11–04/12</div><h3>Semana de jogos</h3><p>De segunda a sexta, no horário do almoço.</p></div>
       <div class="card"><div class="num" data-cfg="vagas"></div><h3>Vagas</h3><p>Com uma mesa e jogos no almoço, as vagas são limitadas. Garanta a sua.</p></div>
-      <div class="card"><div class="num">1x1</div><h3>Categoria única de simples</h3><p>Fase de grupos e mata-mata, para todo mundo jogar pelo menos duas partidas.</p></div>
+      <div class="card"><div class="num">1x1</div><h3>Categoria única de simples</h3><p>Fase de grupos e mata-mata, para todo mundo jogar pelo menos três partidas.</p></div>
       <div class="card"><div class="num">📍</div><h3>Local</h3><p data-cfg="local"></p></div>
     </div>
   </div>
@@ -416,6 +458,68 @@
   </div>
 </section>
 
+<section id="disputa">
+  <div class="wrap">
+    <h2 class="display">Fórmula de <em>disputa</em></h2>
+    <p class="intro">Os 16 inscritos são divididos em 4 grupos de 4. Os 2 primeiros de cada grupo avançam para o mata-mata, até a final.</p>
+    <div class="grid fases">
+      <div class="card"><div class="num">16 → 8</div><h3>Fase de grupos</h3><p>Todos contra todos dentro do grupo: cada um faz 3 partidas. Jogos em <b>1 set de 11 pontos</b>. Avançam os 2 primeiros de cada grupo.</p></div>
+      <div class="card"><div class="num">8 → 4</div><h3>Quartas de final</h3><p>O 1º de um grupo enfrenta o 2º de outro. Jogos em <b>melhor de 3 sets</b>.</p></div>
+      <div class="card"><div class="num">4 → 2</div><h3>Semifinais</h3><p>Jogos em <b>melhor de 3 sets</b>. Quem perde a semifinal disputa o 3º lugar, também em melhor de 3.</p></div>
+      <div class="card"><div class="num">2 → 1</div><h3>Final</h3><p>A decisão do título é em <b>melhor de 5 sets</b>.</p></div>
+    </div>
+
+    <h3 class="display sub-titulo">Os grupos</h3>
+    <p class="sub-intro">Os nomes entram depois do sorteio, que é ao vivo, em <span data-cfg="sorteio"></span>.</p>
+    <div class="grupos">
+      <div class="grupo"><h4 class="display">Grupo A</h4><ol><li><b>A1</b><span>a sortear</span></li><li><b>A2</b><span>a sortear</span></li><li><b>A3</b><span>a sortear</span></li><li><b>A4</b><span>a sortear</span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
+      <div class="grupo"><h4 class="display">Grupo B</h4><ol><li><b>B1</b><span>a sortear</span></li><li><b>B2</b><span>a sortear</span></li><li><b>B3</b><span>a sortear</span></li><li><b>B4</b><span>a sortear</span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
+      <div class="grupo"><h4 class="display">Grupo C</h4><ol><li><b>C1</b><span>a sortear</span></li><li><b>C2</b><span>a sortear</span></li><li><b>C3</b><span>a sortear</span></li><li><b>C4</b><span>a sortear</span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
+      <div class="grupo"><h4 class="display">Grupo D</h4><ol><li><b>D1</b><span>a sortear</span></li><li><b>D2</b><span>a sortear</span></li><li><b>D3</b><span>a sortear</span></li><li><b>D4</b><span>a sortear</span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
+    </div>
+
+    <h3 class="display sub-titulo">O chaveamento</h3>
+    <p class="sub-intro">O 1º e o 2º do mesmo grupo ficam em lados opostos da chave e só podem se reencontrar na final.</p>
+    <p class="arraste">Arraste para o lado para ver a chave inteira →</p>
+    <div class="chave-scroll">
+      <div class="chave">
+        <div class="fase">
+          <h4 class="display">Quartas<small>melhor de 3 sets</small></h4>
+          <div class="fase-corpo">
+            <div class="par">
+              <div class="lugar"><div class="jogo"><span class="id">Quartas 1</span><div class="slot">1º do Grupo A</div><div class="slot">2º do Grupo B</div></div></div>
+              <div class="lugar"><div class="jogo"><span class="id">Quartas 2</span><div class="slot">1º do Grupo C</div><div class="slot">2º do Grupo D</div></div></div>
+            </div>
+            <div class="par">
+              <div class="lugar"><div class="jogo"><span class="id">Quartas 3</span><div class="slot">1º do Grupo B</div><div class="slot">2º do Grupo A</div></div></div>
+              <div class="lugar"><div class="jogo"><span class="id">Quartas 4</span><div class="slot">1º do Grupo D</div><div class="slot">2º do Grupo C</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="fase">
+          <h4 class="display">Semifinais<small>melhor de 3 sets</small></h4>
+          <div class="fase-corpo">
+            <div class="par">
+              <div class="lugar"><div class="jogo"><span class="id">Semifinal 1</span><div class="slot">Vencedor Quartas 1</div><div class="slot">Vencedor Quartas 2</div></div></div>
+              <div class="lugar"><div class="jogo"><span class="id">Semifinal 2</span><div class="slot">Vencedor Quartas 3</div><div class="slot">Vencedor Quartas 4</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="fase">
+          <h4 class="display">Final<small>melhor de 5 sets</small></h4>
+          <div class="fase-corpo">
+            <div class="lugar"><div class="jogo final"><span class="id">Final 🏆</span><div class="slot">Vencedor Semifinal 1</div><div class="slot">Vencedor Semifinal 2</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card terceiro">
+      <h3>Disputa de 3º lugar</h3>
+      <p>Perdedor da Semifinal 1 × Perdedor da Semifinal 2, em melhor de 3 sets.</p>
+    </div>
+  </div>
+</section>
+
 <section id="regulamento">
   <div class="wrap">
     <h2 class="display">Regula<em>mento</em></h2>
@@ -434,15 +538,16 @@
         <summary>Formato da competição</summary>
         <ul>
           <li>Categoria única de simples (1x1), aberta a todos.</li>
-          <li>Fase de grupos seguida de mata-mata. Os grupos são sorteados e divulgados em <span data-cfg="sorteio"></span>.</li>
-          <li>Os melhores de cada grupo avançam para o mata-mata. A final é na sexta, 04/12.</li>
+          <li>4 grupos de 4, sorteados ao vivo em <span data-cfg="sorteio"></span>. Todos jogam contra todos dentro do grupo.</li>
+          <li>Os 2 primeiros de cada grupo avançam para as quartas de final. Veja a <a href="#disputa">fórmula de disputa</a>.</li>
           <li>A tabela de jogos, com dia e horário de cada partida, é divulgada junto com o sorteio.</li>
         </ul>
       </details>
       <details>
         <summary>Partidas</summary>
         <ul>
-          <li>Melhor de 3 sets de 11 pontos. Semifinais e final em melhor de 5 sets.</li>
+          <li>Sets de 11 pontos.</li>
+          <li>Fase de grupos: 1 set. Quartas, semifinais e 3º lugar: melhor de 3 sets. Final: melhor de 5 sets.</li>
           <li>Saque alterna a cada 2 pontos. Em 10 a 10, alterna a cada ponto e vence quem abrir 2 pontos de vantagem.</li>
           <li>Os próprios jogadores marcam o placar e informam o resultado à organização.</li>
         </ul>
