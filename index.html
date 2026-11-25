@@ -271,7 +271,12 @@
   .fases { margin-bottom: 48px; grid-template-columns: repeat(4, 1fr); }
   @media (max-width: 960px) { .fases, .grupos { grid-template-columns: repeat(2, 1fr) !important; } }
   @media (max-width: 520px) { .fases, .grupos { grid-template-columns: 1fr !important; } }
+  .fases .card { display: flex; flex-direction: column; }
   .fases .card p b { color: var(--white); font-weight: 600; }
+  .quando { margin: auto 0 0; padding-top: 14px; list-style: none; display: grid; gap: 6px; }
+  .quando li { display: flex; gap: 8px; align-items: baseline; font-size: 15px; }
+  .quando li b { color: var(--green); font-weight: 700; white-space: nowrap; }
+  .quando li span { color: var(--muted); }
   .sub-titulo { font-size: clamp(26px, 3.4vw, 34px); margin: 0 0 8px; }
   .sub-intro { color: var(--muted); margin: 0 0 20px; }
   .grupos { display: grid; gap: 16px; grid-template-columns: repeat(4, 1fr); margin-bottom: 48px; }
@@ -463,10 +468,14 @@
     <h2 class="display">Fórmula de <em>disputa</em></h2>
     <p class="intro">Os 16 inscritos são divididos em 4 grupos de 4. Os 2 primeiros de cada grupo avançam para o mata-mata, até a final.</p>
     <div class="grid fases">
-      <div class="card"><div class="num">16 → 8</div><h3>Fase de grupos</h3><p>Todos contra todos dentro do grupo: cada um faz 3 partidas. Jogos em <b>1 set de 11 pontos</b>. Avançam os 2 primeiros de cada grupo.</p></div>
-      <div class="card"><div class="num">8 → 4</div><h3>Quartas de final</h3><p>O 1º de um grupo enfrenta o 2º de outro. Jogos em <b>melhor de 3 sets</b>.</p></div>
-      <div class="card"><div class="num">4 → 2</div><h3>Semifinais</h3><p>Jogos em <b>melhor de 3 sets</b>. Quem perde a semifinal disputa o 3º lugar, também em melhor de 3.</p></div>
-      <div class="card"><div class="num">2 → 1</div><h3>Final</h3><p>A decisão do título é em <b>melhor de 5 sets</b>.</p></div>
+      <div class="card"><div class="num">16 → 8</div><h3>Fase de grupos</h3><p>Todos contra todos dentro do grupo: cada um faz 3 partidas. Jogos em <b>1 set de 11 pontos</b>. Avançam os 2 primeiros de cada grupo.</p>
+        <ul class="quando"><li><b>Seg 30/11</b><span>1ª rodada</span></li><li><b>Ter 01/12</b><span>2ª rodada</span></li><li><b>Qua 02/12</b><span>3ª rodada</span></li></ul></div>
+      <div class="card"><div class="num">8 → 4</div><h3>Quartas de final</h3><p>O 1º de um grupo enfrenta o 2º de outro. Jogos em <b>melhor de 3 sets</b>.</p>
+        <ul class="quando"><li><b>Qui 03/12</b><span>4 jogos</span></li></ul></div>
+      <div class="card"><div class="num">4 → 2</div><h3>Semifinais</h3><p>Jogos em <b>melhor de 3 sets</b>. Quem perde a semifinal disputa o 3º lugar, também em melhor de 3.</p>
+        <ul class="quando"><li><b>Sex 04/12</b><span>semifinais e 3º lugar</span></li></ul></div>
+      <div class="card"><div class="num">2 → 1</div><h3>Final</h3><p>A decisão do título é em <b>melhor de 5 sets</b>.</p>
+        <ul class="quando"><li><b>Sex 04/12</b><span>final</span></li></ul></div>
     </div>
 
     <h3 class="display sub-titulo">Os grupos</h3>
@@ -484,7 +493,7 @@
     <div class="chave-scroll">
       <div class="chave">
         <div class="fase">
-          <h4 class="display">Quartas<small>melhor de 3 sets</small></h4>
+          <h4 class="display">Quartas<small>qui 03/12 · melhor de 3 sets</small></h4>
           <div class="fase-corpo">
             <div class="par">
               <div class="lugar"><div class="jogo"><span class="id">Quartas 1</span><div class="slot">1º do Grupo A</div><div class="slot">2º do Grupo B</div></div></div>
@@ -497,7 +506,7 @@
           </div>
         </div>
         <div class="fase">
-          <h4 class="display">Semifinais<small>melhor de 3 sets</small></h4>
+          <h4 class="display">Semifinais<small>sex 04/12 · melhor de 3 sets</small></h4>
           <div class="fase-corpo">
             <div class="par">
               <div class="lugar"><div class="jogo"><span class="id">Semifinal 1</span><div class="slot">Vencedor Quartas 1</div><div class="slot">Vencedor Quartas 2</div></div></div>
@@ -506,7 +515,7 @@
           </div>
         </div>
         <div class="fase">
-          <h4 class="display">Final<small>melhor de 5 sets</small></h4>
+          <h4 class="display">Final<small>sex 04/12 · melhor de 5 sets</small></h4>
           <div class="fase-corpo">
             <div class="lugar"><div class="jogo final"><span class="id">Final 🏆</span><div class="slot">Vencedor Semifinal 1</div><div class="slot">Vencedor Semifinal 2</div></div></div>
           </div>
@@ -515,7 +524,7 @@
     </div>
     <div class="card terceiro">
       <h3>Disputa de 3º lugar</h3>
-      <p>Perdedor da Semifinal 1 × Perdedor da Semifinal 2, em melhor de 3 sets.</p>
+      <p>Sex 04/12 · Perdedor da Semifinal 1 × Perdedor da Semifinal 2, em melhor de 3 sets.</p>
     </div>
   </div>
 </section>
