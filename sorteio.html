@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorteio dos Grupos – 2º Campeonato de Tênis de Mesa da ARCE</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Palco do sorteio: um nome grande no centro, os 4 grupos embaixo, o pote ao lado. Feito para projetar. */
+  :root {
+    --navy-900: #071630; --navy-800: #0b2147; --navy-700: #13306b;
+    --orange: #f7993a; --green: #3db554; --white: #ffffff; --muted: #b8c6e0;
+    --line: rgba(255, 255, 255, .12); --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--navy-800); color: var(--white); font: 400 17px/1.5 "Barlow", system-ui, sans-serif; min-height: 100vh; }
+  .display { font-family: "Barlow Condensed", sans-serif; font-style: italic; font-weight: 800; text-transform: uppercase; line-height: .95; letter-spacing: .5px; }
+  .ord { font-style: inherit; font-size: .55em; vertical-align: .75em; line-height: 0; margin-left: .04em; text-transform: lowercase; }
+  button { font: inherit; cursor: pointer; }
+  .wrap { width: min(1400px, 100% - 32px); margin-inline: auto; }
+
+  header.topo { padding: 18px 0; border-bottom: 1px solid var(--line); background: var(--navy-900); }
+  header.topo .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  header.topo h1 { margin: 0; font-size: clamp(24px, 3vw, 36px); }
+  header.topo h1 span { color: var(--orange); }
+  .acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 700; background: var(--orange); color: var(--navy-900); }
+  .btn:hover { background: #ffad57; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--white); box-shadow: inset 0 0 0 2px var(--line); }
+  .btn.ghost:hover { box-shadow: inset 0 0 0 2px var(--white); }
+  .btn.grande { font-size: 24px; padding: 16px 40px; }
+  .btn:focus-visible { outline: 3px solid var(--white); outline-offset: 2px; }
+
+  main { padding: 24px 0 48px; }
+  .palco-linha { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+  @media (max-width: 1000px) { .palco-linha { grid-template-columns: 1fr; } }
+
+  .palco { background: radial-gradient(120% 140% at 50% 0%, var(--navy-700), var(--navy-900)); border: 1px solid var(--line); border-radius: 20px; padding: 28px 24px; text-align: center; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .proxima { font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); font-size: 15px; }
+  .proxima b { color: var(--orange); }
+  .nome-sorteado { font-size: clamp(40px, 6.2vw, 88px); min-height: 1.05em; color: var(--white); overflow-wrap: anywhere; }
+  .nome-sorteado.girando { color: var(--muted); }
+  .nome-sorteado.caiu { color: var(--orange); animation: caiu .5s ease-out; }
+  @keyframes caiu { 0% { transform: scale(.85); opacity: .3; } 60% { transform: scale(1.06); } 100% { transform: scale(1); opacity: 1; } }
+  .setor-sorteado { color: var(--muted); font-size: 20px; min-height: 1.5em; }
+  .destino { font-size: clamp(22px, 2.6vw, 34px); color: var(--green); min-height: 1.1em; }
+  .dica { color: var(--muted); font-size: 14px; margin: 0; }
+
+  .pote { background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+  .pote h2 { margin: 0 0 4px; font-size: 26px; }
+  .pote p { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+  .pote ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 420px; overflow-y: auto; }
+  .pote li { padding: 6px 10px; border-radius: 8px; background: rgba(255, 255, 255, .05); font-size: 15px; display: flex; justify-content: space-between; gap: 8px; }
+  .pote li small { color: var(--muted); }
+  .pote li.saiu { opacity: .3; text-decoration: line-through; }
+  .pote li.cabeca { border-left: 3px solid var(--orange); }
+
+  .grupos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+  @media (max-width: 1000px) { .grupos { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .grupos { grid-template-columns: 1fr; } }
+  .grupo { background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .grupo h3 { margin: 0; padding: 12px 16px; background: var(--orange); color: var(--navy-900); font-size: 30px; }
+  .grupo ol { list-style: none; margin: 0; padding: 6px 14px; }
+  .grupo li { display: grid; grid-template-columns: 34px 1fr; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--line); min-height: 58px; }
+  .grupo li:last-child { border-bottom: 0; }
+  .grupo li > b { font: 800 italic 20px/1 "Barlow Condensed", sans-serif; color: var(--orange); }
+  .grupo li .vazio { color: var(--muted); font-style: italic; opacity: .6; }
+  .grupo li .quem { font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+  .grupo li .quem small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; }
+  .grupo li.alvo { background: rgba(247, 153, 58, .14); margin: 0 -14px; padding-inline: 14px; }
+  .grupo li.novo .quem { animation: caiu .6s ease-out; color: var(--orange); }
+
+  .config, .tabela-final { margin-top: 32px; background: rgba(255, 255, 255, .04); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .config h2, .tabela-final h2 { margin: 0 0 6px; font-size: 28px; }
+  .config p { color: var(--muted); margin: 0 0 14px; }
+  .lista-config { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; list-style: none; padding: 0; margin: 0 0 14px; }
+  .lista-config li { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, .05); border-radius: 8px; padding: 8px 10px; }
+  .lista-config li label { display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; }
+  .lista-config input { width: 18px; height: 18px; accent-color: var(--orange); }
+  .lista-config small { color: var(--muted); }
+  .lista-config .remover { margin-left: auto; background: none; border: 0; color: var(--muted); font-size: 18px; line-height: 1; padding: 4px 6px; border-radius: 6px; }
+  .lista-config .remover:hover { color: var(--white); background: rgba(255, 255, 255, .1); }
+  .add { display: flex; flex-wrap: wrap; gap: 8px; }
+  .add input { flex: 1 1 200px; font: inherit; color: var(--white); background: var(--navy-900); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  .status { margin: 10px 0 0; font-weight: 600; }
+  .status.ok { color: var(--green); }
+  .status.alerta { color: var(--orange); }
+
+  .dias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 12px; }
+  @media (max-width: 900px) { .dias { grid-template-columns: 1fr; } }
+  .dia { background: var(--navy-900); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+  .dia h3 { margin: 0 0 6px; color: var(--orange); font-size: 22px; }
+  .dia h3 small { font: 600 14px "Barlow", sans-serif; color: var(--muted); text-transform: none; margin-left: 6px; }
+  .dia ol { margin: 0; padding-left: 22px; }
+  .dia li { padding: 3px 0; }
+  .dia li span { color: var(--muted); font-size: 13px; }
+  .copiado { color: var(--green); font-weight: 600; margin-left: 8px; }
+
+  @media (prefers-reduced-motion: reduce) { .nome-sorteado.caiu, .grupo li.novo .quem { animation: none; } }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="wrap">
+    <h1 class="display">Sorteio dos grupos · <span>2<i class="ord">o</i> Campeonato de Tênis de Mesa da ARCE</span></h1>
+    <div class="acoes">
+      <button class="btn ghost" id="btn-desfazer" type="button">Desfazer último</button>
+      <button class="btn ghost" id="btn-recomecar" type="button">Recomeçar</button>
+      <button class="btn ghost" id="btn-tela-cheia" type="button">Tela cheia</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="palco-linha">
+    <section class="palco" aria-live="polite">
+      <div class="proxima" id="proxima">Carregando inscritos…</div>
+      <div class="nome-sorteado display" id="nome">–</div>
+      <div class="setor-sorteado" id="setor"></div>
+      <div class="destino display" id="destino"></div>
+      <button class="btn grande" id="btn-sortear" type="button" disabled>Sortear</button>
+      <p class="dica">Atalho: barra de espaço</p>
+    </section>
+    <aside class="pote">
+      <h2 class="display" id="pote-titulo">Pote</h2>
+      <p id="pote-info"></p>
+      <ul id="pote-lista"></ul>
+    </aside>
+  </div>
+
+  <div class="grupos" id="grupos"></div>
+
+  <section class="tabela-final" id="tabela-final" hidden>
+    <h2 class="display">Tabela da fase de grupos</h2>
+    <div class="acoes"><button class="btn" id="btn-copiar" type="button">Copiar resultado para o WhatsApp</button><span class="copiado" id="copiado" hidden>Copiado!</span></div>
+    <div class="dias" id="dias"></div>
+  </section>
+
+  <section class="config" id="config">
+    <h2 class="display">Participantes</h2>
+    <p>A lista vem dos inscritos confirmados da planilha. Marque até 4 cabeças de chave (Art. 20 do regulamento): eles são sorteados primeiro, um em cada grupo, na posição 1. Sem cabeças de chave, todos saem do mesmo pote. A lista trava quando o sorteio começa.</p>
+    <ul class="lista-config" id="lista-config"></ul>
+    <form class="add" id="form-add">
+      <input id="add-nome" placeholder="Nome" aria-label="Nome do participante">
+      <input id="add-setor" placeholder="Setor" aria-label="Setor do participante">
+      <button class="btn ghost" type="submit">Adicionar</button>
+      <button class="btn ghost" type="button" id="btn-recarregar">Recarregar da planilha</button>
+    </form>
+    <p class="status" id="status"></p>
+  </section>
+</main>
+
+<script>
+(function () {
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcmgJ5Lu7GUVjhQGLLzu6wJg0W1RLDbAslpSimme3mrVimWdqvRSYoew00spy43lnV5hgP1VR01rp9/pub?gid=91741312&single=true&output=csv";
+  const GRUPOS = ["A", "B", "C", "D"];
+  const SLOTS = [1, 2, 3, 4].flatMap(p => GRUPOS.map(g => g + p));   // A1, B1, C1, D1, A2, …
+  const CHAVE = "sorteio-tm-arce-2026";
+  const DIAS = [
+    { nome: "Segunda", data: "30/11", rodada: "1ª rodada", pares: [[1, 2], [3, 4]] },
+    { nome: "Terça", data: "01/12", rodada: "2ª rodada", pares: [[1, 3], [2, 4]] },
+    { nome: "Quarta", data: "02/12", rodada: "3ª rodada", pares: [[1, 4], [2, 3]] },
+  ];
+
+  // estado: participantes, cabeças de chave e o que já saiu (na ordem)
+  let st = { pessoas: [], cabecas: [], saiu: [] };
+  let girando = false, ultimoSlot = null;
+  const $ = id => document.getElementById(id);
+
+  function salvar() { try { localStorage.setItem(CHAVE, JSON.stringify(st)); } catch (e) {} }
+  function carregarSalvo() { try { const s = JSON.parse(localStorage.getItem(CHAVE)); if (s && Array.isArray(s.pessoas) && s.pessoas.length) { st = s; return true; } } catch (e) {} return false; }
+
+  function rnd(n) { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }
+
+  function parseCsv(text) {
+    const rows = []; let row = [], cell = "", q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) { if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') q = false; else cell += c; }
+      else if (c === '"') q = true;
+      else if (c === ",") { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += c;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+
+  async function buscarPlanilha() {
+    status("Buscando inscritos confirmados…", "");
+    try {
+      const r = await fetch(CSV_URL + "&t=" + Date.now());
+      const linhas = parseCsv(await r.text()).slice(1).filter(l => l[0] && l[0].trim());
+      st = { pessoas: linhas.map(l => ({ nome: l[0].trim(), setor: (l[1] || "").trim() })), cabecas: [], saiu: [] };
+      salvar(); render();
+    } catch (e) {
+      status("Não consegui ler a planilha. Adicione os nomes à mão abaixo.", "alerta"); render();
+    }
+  }
+
+  // a ordem das posições: cabeças primeiro (posição 1), depois o resto
+  const nCab = () => st.cabecas.length;
+  const proximoSlot = () => SLOTS[st.saiu.length];
+  function poteAtual() {
+    const ja = new Set(st.saiu.map(s => s.i));
+    const cab = new Set(st.cabecas);
+    const naPrimeira = st.saiu.length < nCab();
+    return st.pessoas.map((p, i) => i).filter(i => !ja.has(i) && (naPrimeira ? cab.has(i) : !cab.has(i)));
+  }
+  const total = () => Math.min(st.pessoas.length, SLOTS.length);
+  const acabou = () => st.saiu.length >= total();
+
+  function nomeCurto(n) { const p = n.split(/\s+/); return p.length > 2 ? p[0] + " " + p[p.length - 1] : n; }
+  function titulo(n) { return n.toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(De|Da|Do|Dos|Das|E)\b/g, w => w.toLowerCase()); }
+  const fmt = n => (n === n.toUpperCase() ? titulo(n) : n);
+
+  function sortear() {
+    if (girando || acabou()) return;
+    const pote = poteAtual();
+    if (!pote.length) return;
+    girando = true;
+    $("btn-sortear").disabled = true;
+    const escolhido = pote[rnd(pote.length)];
+    const slot = proximoSlot();
+    const reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const nome = $("nome"), setor = $("setor"), destino = $("destino");
+    destino.textContent = ""; setor.textContent = "";
+    nome.className = "nome-sorteado display girando";
+    let passo = 0; const passos = reduz ? 0 : 22;
+    const girar = () => {
+      if (passo < passos) {
+        const i = pote[rnd(pote.length)];
+        nome.textContent = fmt(st.pessoas[i].nome);
+        passo++;
+        setTimeout(girar, 45 + passo * passo * 0.9);
+      } else {
+        const p = st.pessoas[escolhido];
+        nome.textContent = fmt(p.nome);
+        nome.className = "nome-sorteado display caiu";
+        setor.textContent = p.setor;
+        destino.textContent = "Grupo " + slot[0] + " · posição " + slot;
+        st.saiu.push({ i: escolhido, slot });
+        ultimoSlot = slot;
+        salvar();
+        girando = false;
+        render();
+      }
+    };
+    girar();
+  }
+
+  function desfazer() {
+    if (girando || !st.saiu.length) return;
+    st.saiu.pop(); ultimoSlot = null; salvar();
+    $("nome").textContent = "–"; $("nome").className = "nome-sorteado display"; $("setor").textContent = ""; $("destino").textContent = "";
+    render();
+  }
+
+  function recomecar() {
+    if (girando) return;
+    const b = $("btn-recomecar");
+    if (st.saiu.length && b.dataset.confirma !== "1") { b.dataset.confirma = "1"; b.textContent = "Clique de novo para apagar o sorteio"; setTimeout(() => { b.dataset.confirma = ""; b.textContent = "Recomeçar"; }, 4000); return; }
+    b.dataset.confirma = ""; b.textContent = "Recomeçar";
+    st.saiu = []; ultimoSlot = null; salvar();
+    $("nome").textContent = "–"; $("nome").className = "nome-sorteado display"; $("setor").textContent = ""; $("destino").textContent = "";
+    render();
+  }
+
+  function quemNo(slot) { const s = st.saiu.find(x => x.slot === slot); return s ? st.pessoas[s.i] : null; }
+
+  function status(txt, cls) { const s = $("status"); s.textContent = txt; s.className = "status " + (cls || ""); }
+
+  function render() {
+    const comecou = st.saiu.length > 0;
+    // palco
+    const fim = acabou();
+    if (!st.pessoas.length) $("proxima").textContent = "Nenhum participante na lista";
+    else if (fim) $("proxima").innerHTML = "<b>Sorteio concluído</b>";
+    else $("proxima").innerHTML = (st.saiu.length < nCab() ? "Cabeças de chave · " : "") + "Próxima posição: <b>Grupo " + proximoSlot()[0] + " · " + proximoSlot() + "</b>";
+    $("btn-sortear").disabled = girando || fim || !st.pessoas.length;
+    $("btn-sortear").textContent = fim ? "Sorteio concluído" : (comecou ? "Sortear próximo" : "Começar sorteio");
+    $("btn-desfazer").disabled = !comecou || girando;
+
+    // pote
+    const pote = new Set(poteAtual());
+    const naCab = st.saiu.length < nCab();
+    $("pote-titulo").textContent = naCab ? "Pote 1 · cabeças" : (nCab() ? "Pote 2" : "Pote");
+    const restam = st.pessoas.length - st.saiu.length;
+    $("pote-info").textContent = fim ? "Todos os nomes foram sorteados." : pote.size + " no pote agora · " + restam + " ainda não sorteados";
+    const ja = new Set(st.saiu.map(s => s.i));
+    $("pote-lista").innerHTML = st.pessoas.map((p, i) =>
+      `<li class="${ja.has(i) ? "saiu" : ""} ${st.cabecas.includes(i) ? "cabeca" : ""}"><span>${esc(nomeCurto(fmt(p.nome)))}</span><small>${esc(p.setor)}</small></li>`).join("");
+
+    // grupos
+    $("grupos").innerHTML = GRUPOS.map(g => `<div class="grupo"><h3 class="display">Grupo ${g}</h3><ol>${[1, 2, 3, 4].map(n => {
+      const slot = g + n, p = quemNo(slot), alvo = !fim && !girando && slot === proximoSlot();
+      return `<li class="${alvo ? "alvo" : ""} ${slot === ultimoSlot ? "novo" : ""}"><b>${slot}</b>${p ? `<span class="quem">${esc(fmt(p.nome))}<small>${esc(p.setor)}</small></span>` : `<span class="vazio">${alvo ? "sorteando…" : "a sortear"}</span>`}</li>`;
+    }).join("")}</ol></div>`).join("");
+
+    // configuração
+    $("lista-config").innerHTML = st.pessoas.map((p, i) => `<li><label><input type="checkbox" data-cab="${i}" ${st.cabecas.includes(i) ? "checked" : ""} ${comecou ? "disabled" : ""}><span>${esc(fmt(p.nome))} <small>· ${esc(p.setor)}</small></span></label>${comecou ? "" : `<button class="remover" type="button" data-rem="${i}" aria-label="Remover ${esc(p.nome)}">×</button>`}</li>`).join("");
+    $("form-add").hidden = comecou;
+    if (!comecou) {
+      const n = st.pessoas.length;
+      if (n === 16) status("16 participantes, prontos para o sorteio." + (nCab() ? " " + nCab() + " cabeça(s) de chave." : ""), "ok");
+      else status(n + " participantes. A tabela foi feita para 16: com menos, sobram posições vazias; com mais, só os 16 primeiros sorteados entram.", "alerta");
+    } else status("O sorteio começou. Para mudar a lista, use Recomeçar.", "");
+
+    // tabela final
+    $("tabela-final").hidden = !fim;
+    if (fim) {
+      const nm = s => { const p = quemNo(s); return p ? esc(nomeCurto(fmt(p.nome))) : s; };
+      $("dias").innerHTML = DIAS.map(d => `<div class="dia"><h3 class="display">${d.nome}<small>${d.data} · ${d.rodada}</small></h3><ol>${d.pares.flatMap(([x, y]) => GRUPOS.map(g => `<li>${nm(g + x)} × ${nm(g + y)} <span>(${g}${x} × ${g}${y})</span></li>`)).join("")}</ol></div>`).join("");
+    }
+  }
+
+  function textoResultado() {
+    let t = "*Sorteio dos grupos – 2º Campeonato de Tênis de Mesa da ARCE*\n";
+    GRUPOS.forEach(g => {
+      t += "\n*Grupo " + g + "*\n";
+      [1, 2, 3, 4].forEach(n => { const p = quemNo(g + n); t += g + n + " – " + (p ? fmt(p.nome) + (p.setor ? " (" + p.setor + ")" : "") : "–") + "\n"; });
+    });
+    DIAS.forEach(d => {
+      t += "\n*" + d.nome + ", " + d.data + " – " + d.rodada + "*\n";
+      d.pares.forEach(([x, y]) => GRUPOS.forEach(g => { const a = quemNo(g + x), b = quemNo(g + y); t += nomeCurto(fmt(a ? a.nome : g + x)) + " x " + nomeCurto(fmt(b ? b.nome : g + y)) + "\n"; }));
+    });
+    t += "\nTabela completa: https://tenisdemesaarce.github.io/#disputa";
+    return t;
+  }
+
+  async function copiar() {
+    const txt = textoResultado();
+    try { await navigator.clipboard.writeText(txt); }
+    catch (e) { const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (e2) {} ta.remove(); }
+    $("copiado").hidden = false; setTimeout(() => { $("copiado").hidden = true; }, 2500);
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+  // eventos
+  $("btn-sortear").addEventListener("click", sortear);
+  $("btn-desfazer").addEventListener("click", desfazer);
+  $("btn-recomecar").addEventListener("click", recomecar);
+  $("btn-copiar").addEventListener("click", copiar);
+  $("btn-recarregar").addEventListener("click", buscarPlanilha);
+  $("btn-tela-cheia").addEventListener("click", () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {}); else document.exitFullscreen?.(); });
+  document.addEventListener("keydown", e => { if (e.code === "Space" && !/INPUT|BUTTON|TEXTAREA/.test(e.target.tagName)) { e.preventDefault(); sortear(); } });
+  $("lista-config").addEventListener("change", e => {
+    const i = Number(e.target.dataset.cab); if (Number.isNaN(i)) return;
+    if (e.target.checked) { if (st.cabecas.length >= 4) { e.target.checked = false; status("No máximo 4 cabeças de chave, uma por grupo.", "alerta"); return; } st.cabecas.push(i); }
+    else st.cabecas = st.cabecas.filter(x => x !== i);
+    salvar(); render();
+  });
+  $("lista-config").addEventListener("click", e => {
+    const i = e.target.dataset.rem; if (i === undefined) return;
+    const k = Number(i);
+    st.pessoas.splice(k, 1);
+    st.cabecas = st.cabecas.filter(x => x !== k).map(x => (x > k ? x - 1 : x));
+    salvar(); render();
+  });
+  $("form-add").addEventListener("submit", e => {
+    e.preventDefault();
+    const nome = $("add-nome").value.trim(); if (!nome) return;
+    st.pessoas.push({ nome, setor: $("add-setor").value.trim() });
+    $("add-nome").value = ""; $("add-setor").value = "";
+    salvar(); render();
+  });
+
+  if (carregarSalvo()) render(); else buscarPlanilha();
+})();
+</script>
+</body>
+</html>
