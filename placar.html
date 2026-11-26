@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Placar – 2º Campeonato de Tênis de Mesa da ARCE</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Placar para o telão (16:9). Controles no rodapé (tecla H) ou em outra janela com ?controle. */
+  :root {
+    --navy-900: #071630; --navy-800: #0b2147; --navy-700: #13306b;
+    --orange: #f7993a; --green: #3db554; --white: #ffffff; --muted: #b8c6e0;
+    --line: rgba(255, 255, 255, .12); --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body { margin: 0; border-top: .8vh solid var(--orange); background: radial-gradient(120% 90% at 50% 0%, var(--navy-700), var(--navy-900) 70%); color: var(--white); font: 400 17px/1.4 "Barlow", system-ui, sans-serif; overflow: hidden; }
+  .display { font-family: "Barlow Condensed", sans-serif; font-style: italic; font-weight: 800; text-transform: uppercase; line-height: .95; letter-spacing: .5px; }
+  button, select { font: inherit; }
+  button { cursor: pointer; }
+
+  /* ---------- telão ---------- */
+  .tela { height: calc(100vh - .8vh); display: grid; grid-template-rows: auto auto 1fr; padding: 2.2vh 2.6vw 3vh; position: relative; }
+
+  .topo { display: flex; align-items: center; justify-content: space-between; gap: 2vw; }
+  .marca { font-size: 3.4vh; }
+  .marca span { color: var(--orange); }
+  .formato { font-size: 2.4vh; color: var(--muted); font-weight: 600; text-align: right; }
+  .formato b { color: var(--green); }
+  .fase { text-align: center; margin: 1.4vh 0 1vh; }
+  .fase .rotulo { display: inline-block; background: var(--orange); color: var(--navy-900); padding: .5vh 1.8vw .7vh; border-radius: 999px; font-size: 3.2vh; }
+
+  .quadra { display: grid; grid-template-columns: 1fr minmax(14vw, auto) 1fr; gap: 1.6vw; align-items: stretch; min-height: 0; }
+  .lado { position: relative; background: rgba(255, 255, 255, .05); border: .3vh solid var(--line); border-radius: 3vh; display: grid; grid-template-rows: auto auto auto 1fr; justify-items: center; padding: 2.4vh 1.6vw 1.6vh; min-height: 0; transition: border-color .25s, box-shadow .25s; }
+  .lado.sacando { border-color: var(--orange); box-shadow: 0 0 0 .3vh var(--orange), 0 0 6vh rgba(247, 153, 58, .25); }
+  .foto { width: 25vh; height: 25vh; border-radius: 50%; overflow: hidden; background: var(--navy-700); border: .7vh solid var(--white); display: grid; place-items: center; box-shadow: 0 1.2vh 3vh rgba(0, 0, 0, .35); }
+  .lado.sacando .foto { border-color: var(--orange); }
+  .foto img { width: 100%; height: 100%; object-fit: cover; }
+  .foto .iniciais { font-size: 9vh; color: var(--muted); }
+  .nome { font-size: 6vh; margin-top: 1.6vh; text-align: center; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .setor { font-size: 2.6vh; color: var(--muted); font-weight: 600; letter-spacing: .15em; }
+  .pontos { font-size: min(36vh, 20vw); line-height: .9; align-self: center; font-variant-numeric: tabular-nums; padding-right: .06em; }
+  .pontos.pulo { animation: pulo .35s ease-out; }
+  @keyframes pulo { 0% { transform: scale(1.18); color: var(--orange); } 100% { transform: scale(1); } }
+  .saque { position: absolute; top: 2vh; left: 1.4vw; display: flex; align-items: center; gap: .6vw; font: 800 italic 2.6vh/1 "Barlow Condensed", sans-serif; color: var(--orange); text-transform: uppercase; opacity: 0; transition: opacity .2s; }
+  .saque::before { content: ""; width: 2.6vh; height: 2.6vh; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #ffe7cc 45%, #f7c48c); box-shadow: 0 0 1.4vh rgba(247, 153, 58, .8); }
+  .lado.sacando .saque { opacity: 1; }
+  .alerta { position: absolute; top: 2vh; right: 1.4vw; background: var(--green); color: var(--navy-900); padding: .5vh 1vw .6vh; border-radius: 999px; font-size: 2.6vh; }
+  .alerta.match { background: var(--orange); animation: pisca 1s infinite; }
+  @keyframes pisca { 50% { opacity: .55; } }
+  .sets-ganhos { display: flex; gap: .8vh; margin-top: 1.2vh; min-height: 2.4vh; }
+  .sets-ganhos i { width: 2.4vh; height: 2.4vh; border-radius: 50%; border: .35vh solid var(--muted); }
+  .sets-ganhos i.ok { background: var(--green); border-color: var(--green); }
+
+  .centro { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2vh; text-align: center; }
+  .set-atual { font-size: 4.4vh; color: var(--orange); }
+  .placar-sets { font-size: 12vh; line-height: 1; }
+  .placar-sets small { display: block; font: 600 2.2vh/1.2 "Barlow", sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; font-style: normal; }
+  .historico { list-style: none; margin: 0; padding: 0; display: grid; gap: .8vh; }
+  .historico li { background: rgba(255, 255, 255, .07); border-radius: 1vh; padding: .6vh 1.2vw; font: 700 2.6vh/1.2 "Barlow", sans-serif; font-variant-numeric: tabular-nums; }
+  .historico li span { color: var(--muted); font-weight: 600; margin-right: .6vw; }
+  .vs { font-size: 9vh; color: var(--muted); opacity: .6; }
+
+  /* avisos e vitória */
+  .aviso { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.9); background: var(--orange); color: var(--navy-900); padding: 3vh 4vw; border-radius: 3vh; font-size: 8vh; text-align: center; box-shadow: 0 3vh 8vh rgba(0, 0, 0, .5); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 20; }
+  .aviso small { display: block; font-size: .45em; margin-top: 1vh; }
+  .aviso.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .vitoria { position: fixed; inset: 0; background: radial-gradient(80% 80% at 50% 40%, rgba(19, 48, 107, .96), rgba(7, 22, 48, .98)); display: grid; place-items: center; z-index: 15; text-align: center; overflow: hidden; }
+  .vitoria .foto { width: 34vh; height: 34vh; border-color: var(--orange); border-width: 1vh; margin: 0 auto; animation: entra .7s ease-out; }
+  .vitoria .foto .iniciais { font-size: 14vh; }
+  .vitoria .tit { font-size: 5vh; color: var(--orange); margin-top: 3vh; }
+  .vitoria .quem { font-size: 12vh; margin-top: 1vh; }
+  .vitoria .det { font-size: 3vh; color: var(--muted); font-weight: 600; margin-top: 1.4vh; }
+  @keyframes entra { 0% { transform: scale(.4) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+  .confete { position: absolute; top: -4vh; width: 1.2vh; height: 2.4vh; animation: cai linear infinite; }
+  @keyframes cai { to { transform: translateY(110vh) rotate(720deg); } }
+
+  /* ---------- controles ---------- */
+  .engrenagem { position: fixed; right: 14px; bottom: 14px; z-index: 30; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .12); color: var(--white); padding: 8px 14px; font-weight: 700; opacity: 0; transition: opacity .3s; }
+  body.mexeu .engrenagem, .engrenagem:focus-visible { opacity: 1; }
+  .controles { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: rgba(7, 22, 48, .97); border-top: 2px solid var(--orange); padding: 14px 16px 16px; max-height: 70vh; overflow: auto; }
+  .ctl-linha { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; max-width: 1400px; margin: 0 auto 12px; }
+  .ctl-linha:last-child { margin-bottom: 0; }
+  .campo { display: grid; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+  .campo select { background: var(--navy-800); color: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; font-size: 16px; text-transform: none; letter-spacing: 0; min-width: 190px; }
+  .campo.jogo select { min-width: min(460px, 86vw); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 10px 18px; font-weight: 700; background: var(--orange); color: var(--navy-900); }
+  .btn:hover { background: #ffad57; }
+  .btn.ghost { background: transparent; color: var(--white); box-shadow: inset 0 0 0 2px var(--line); }
+  .btn.ghost:hover { box-shadow: inset 0 0 0 2px var(--white); }
+  .btn.verde { background: var(--green); color: var(--navy-900); }
+  .btn.ponto { font-size: 20px; padding: 14px 26px; }
+  .btn:focus-visible, .campo select:focus-visible { outline: 3px solid var(--white); outline-offset: 2px; }
+  .dica { color: var(--muted); font-size: 13px; max-width: 1400px; margin: 4px auto 0; }
+  .dica kbd { background: rgba(255, 255, 255, .1); border-radius: 5px; padding: 1px 6px; font: 600 12px/1.6 "Barlow", sans-serif; color: var(--white); }
+  .sep { flex: 1; }
+  @media (max-width: 700px) { body { overflow: auto; } .controles { position: static; max-height: none; } }
+</style>
+</head>
+<body>
+
+<div class="tela">
+  <div class="topo">
+    <div class="marca display">Tênis de Mesa <span>ARCE</span></div>
+    <div class="formato" id="formato"></div>
+  </div>
+  <div class="fase"><span class="rotulo display" id="rotulo-fase"></span></div>
+  <div class="quadra">
+    <section class="lado" id="lado0"></section>
+    <div class="centro">
+      <div class="set-atual display" id="set-atual"></div>
+      <div class="placar-sets display" id="placar-sets"></div>
+      <ol class="historico" id="historico"></ol>
+    </div>
+    <section class="lado" id="lado1"></section>
+  </div>
+</div>
+
+<div class="aviso display" id="aviso"></div>
+<div class="vitoria" id="vitoria" hidden></div>
+
+<button class="engrenagem" id="engrenagem" type="button" title="Mostrar controles (H)">⚙ Controles</button>
+
+<div class="controles" id="controles" hidden>
+  <div class="ctl-linha">
+    <label class="campo jogo">Jogo<select id="sel-jogo"></select></label>
+    <label class="campo">Esquerda<select id="sel-p0"></select></label>
+    <label class="campo">Direita<select id="sel-p1"></select></label>
+    <label class="campo">Formato<select id="sel-fmt"></select></label>
+  </div>
+  <div class="ctl-linha">
+    <button class="btn ponto" id="mais0" type="button"></button>
+    <button class="btn ponto" id="mais1" type="button"></button>
+    <button class="btn ghost" id="desfazer" type="button">↶ Desfazer</button>
+    <span class="sep"></span>
+    <button class="btn ghost" id="saque0" type="button"></button>
+    <button class="btn ghost" id="saque1" type="button"></button>
+    <button class="btn ghost" id="inverter" type="button">⇄ Inverter lados</button>
+  </div>
+  <div class="ctl-linha">
+    <button class="btn verde" id="proximo" type="button">Próximo jogo →</button>
+    <button class="btn ghost" id="zerar" type="button">Zerar placar</button>
+    <button class="btn ghost" id="copiar" type="button">Copiar resultados</button>
+    <button class="btn ghost" id="cheia" type="button">⛶ Tela cheia</button>
+    <span class="sep"></span>
+    <button class="btn ghost" id="fechar" type="button">Ocultar controles (H)</button>
+  </div>
+  <p class="dica">Atalhos: <kbd>←</kbd> ponto da esquerda · <kbd>→</kbd> ponto da direita · <kbd>Backspace</kbd> desfazer · <kbd>S</kbd> inverter lados · <kbd>F</kbd> tela cheia · <kbd>H</kbd> mostrar/ocultar controles. Para controlar de outra janela no mesmo computador, abra <b>placar.html?controle</b>: as duas ficam sincronizadas.</p>
+</div>
+
+<script>
+/* ---------- dados ---------- */
+const ATLETAS = {
+  "william-ferreira": ["William Ferreira", "CEE"], "helio-souza": ["Hélio Souza", "CTR"],
+  "livia-menescal": ["Lívia Menescal", "GAF"], "diego-lima": ["Diego Lima", "CDR"],
+  "andre-pereira": ["André Pereira", "GAF"], "alceu-junior": ["Alceu Júnior", "CSB"],
+  "tamires-dias": ["Tamires Dias", "CTR"], "adriano-lima": ["Adriano Lima", "GAF"],
+  "lucas-vale": ["Lucas Vale", "GAF"], "deleon-parente": ["Deleon Parente", "CEE"],
+  "matheus-scorsafava": ["Matheus Scorsafava", "GAF"], "franco-sousa": ["Franco Sousa", "CTR"],
+  "micael-oliveira": ["Micael Oliveira", "GAF"], "davi-garcia": ["Davi Garcia", "CTR"],
+  "joana-maia": ["Joana Maia", "CTR"], "roberto-sales": ["Roberto Sales", "CTR"],
+};
+const GRUPOS = {
+  A: ["william-ferreira", "helio-souza", "livia-menescal", "diego-lima"],
+  B: ["andre-pereira", "alceu-junior", "tamires-dias", "adriano-lima"],
+  C: ["lucas-vale", "deleon-parente", "matheus-scorsafava", "franco-sousa"],
+  D: ["micael-oliveira", "davi-garcia", "joana-maia", "roberto-sales"],
+};
+const FORMATOS = {
+  g15: { alvo: 15, melhorDe: 1, troca: 8, nome: "1 set de 15 pontos" },
+  md3: { alvo: 11, melhorDe: 3, troca: 5, nome: "Melhor de 3 sets de 11 pontos" },
+  md5: { alvo: 11, melhorDe: 5, troca: 5, nome: "Melhor de 5 sets de 11 pontos" },
+};
+const DIAS = [
+  { nome: "Segunda", data: "30/11", iso: "2026-11-30", jogos: [["A",1,2],["B",1,2],["A",3,4],["B",3,4],["A",1,3],["B",1,3],["A",2,4],["B",2,4]] },
+  { nome: "Terça", data: "01/12", iso: "2026-12-01", jogos: [["C",1,2],["D",1,2],["C",3,4],["D",3,4],["C",1,3],["D",1,3],["C",2,4],["D",2,4]] },
+  { nome: "Quarta", data: "02/12", iso: "2026-12-02", jogos: [["A",1,4],["B",1,4],["C",1,4],["D",1,4],["A",2,3],["B",2,3],["C",2,3],["D",2,3]] },
+];
+const JOGOS = [];
+DIAS.forEach(d => d.jogos.forEach(([g, a, b], k) => JOGOS.push({
+  id: `${d.iso}-${k + 1}`, dia: `${d.nome} ${d.data}`, iso: d.iso, num: k + 1,
+  fase: `Fase de grupos · Grupo ${g} · Jogo ${k + 1}`, p: [GRUPOS[g][a - 1], GRUPOS[g][b - 1]], fmt: "g15",
+})));
+[
+  ["Q1", "Quartas de final · Jogo 1", "1ºA × 2ºB", "md3", "2026-12-03"], ["Q2", "Quartas de final · Jogo 2", "1ºC × 2ºD", "md3", "2026-12-03"],
+  ["Q3", "Quartas de final · Jogo 3", "1ºB × 2ºA", "md3", "2026-12-03"], ["Q4", "Quartas de final · Jogo 4", "1ºD × 2ºC", "md3", "2026-12-03"],
+  ["S1", "Semifinal 1", "Venc. Q1 × Venc. Q2", "md3", "2026-12-04"], ["S2", "Semifinal 2", "Venc. Q3 × Venc. Q4", "md3", "2026-12-04"],
+  ["T3", "Disputa de 3º lugar", "Perd. S1 × Perd. S2", "md3", "2026-12-04"], ["F", "Grande final", "Venc. S1 × Venc. S2", "md5", "2026-12-04"],
+].forEach(([id, fase, quem, fmt, iso]) => JOGOS.push({ id, fase, quem, fmt, iso, dia: iso.endsWith("03") ? "Quinta 03/12" : "Sexta 04/12", p: [null, null] }));
+const jogoPorId = id => JOGOS.find(j => j.id === id);
+
+/* ---------- estado ---------- */
+const CHAVE = "placar-tm-arce-2026", CHAVE_RES = CHAVE + "-resultados";
+const ler = (k, padrao) => { try { return JSON.parse(localStorage.getItem(k)) ?? padrao; } catch { return padrao; } };
+const gravar = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+let resultados = ler(CHAVE_RES, {});
+let st = ler(CHAVE, null);
+let canal = null; try { canal = new BroadcastChannel(CHAVE); } catch {}
+
+function novoEstado(jogo) {
+  return { jogo: jogo.id, p: [...jogo.p], fmt: jogo.fmt, sets: [], cur: [0, 0], saque: 0, inverter: false, fim: null, trocou: false, hist: [] };
+}
+function jogoPadrao() {
+  const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Fortaleza" });
+  return JOGOS.find(j => j.iso === hoje && !resultados[j.id]) || JOGOS.find(j => !resultados[j.id]) || JOGOS[0];
+}
+if (!st || !jogoPorId(st.jogo)) st = novoEstado(jogoPadrao());
+
+const fmt = () => FORMATOS[st.fmt];
+const nome = id => id ? ATLETAS[id][0] : "A definir";
+const primeiro = id => id ? ATLETAS[id][0].split(" ")[0] : "?";
+const setsGanhos = i => st.sets.filter(s => s[i] > s[1 - i]).length;
+const precisa = () => Math.ceil(fmt().melhorDe / 2);
+
+function sacador() {
+  const { alvo } = fmt(), k = st.sets.length, t = st.cur[0] + st.cur[1], d = 2 * (alvo - 1);
+  const n = t < d ? Math.floor(t / 2) : (alvo - 1) + (t - d);   // a cada 2 pontos; no empate (10x10 / 14x14), a cada ponto
+  return ((st.saque + k) % 2 + n) % 2;                           // em cada set começa sacando quem recebeu no anterior
+}
+function setPoint(i) {
+  const { alvo } = fmt(), a = st.cur[i], b = st.cur[1 - i];
+  return !st.fim && a >= alvo - 1 && a > b;
+}
+
+/* ---------- ações ---------- */
+function snapshot() { const { hist, ...resto } = st; return JSON.stringify(resto); }
+function mudar(fn) {
+  const antes = snapshot();
+  const aviso = fn();
+  st.hist = [...(st.hist || []), antes].slice(-300);
+  publicar(aviso);
+}
+function ponto(i) {
+  if (st.fim || !st.p[0] || !st.p[1]) return;
+  mudar(() => {
+    let aviso = null;
+    st.cur[i]++;
+    const { alvo, troca, melhorDe } = fmt(), a = st.cur[i], b = st.cur[1 - i];
+    if (a >= alvo && a - b >= 2) {                       // fechou o set
+      st.sets.push([...st.cur]); st.cur = [0, 0]; st.trocou = false;
+      const placar = `${st.sets.at(-1)[0]} × ${st.sets.at(-1)[1]}`;
+      if (setsGanhos(i) >= precisa()) {
+        st.fim = { venc: i };
+        resultados[st.jogo] = { p: [...st.p], sets: st.sets.map(x => [...x]), venc: st.p[i] };
+        gravar(CHAVE_RES, resultados);
+      } else aviso = [`Set de ${primeiro(st.p[i])}!`, `${placar} · troca de lado`];
+    } else if (!st.trocou && st.sets.length === melhorDe - 1 && Math.max(a, b) === troca) {
+      st.trocou = true; aviso = ["Troca de lado!", `${st.cur[0]} × ${st.cur[1]}`];   // set decisivo
+    }
+    return aviso;
+  });
+  pulo(i);
+}
+function desfazer() {
+  if (!st.hist || !st.hist.length) return;
+  const h = st.hist; const anterior = JSON.parse(h.pop());
+  if (st.fim && !anterior.fim) { delete resultados[st.jogo]; gravar(CHAVE_RES, resultados); }
+  st = { ...anterior, hist: h };
+  publicar();
+}
+function trocarJogo(id) {
+  const j = jogoPorId(id);
+  const emAndamento = !st.fim && (st.sets.length || st.cur[0] || st.cur[1]);
+  if (emAndamento && !confirm("O jogo atual ainda não terminou. Trocar de jogo mesmo assim? O placar dele será perdido.")) { render(); return; }
+  st = novoEstado(j);
+  const r = resultados[j.id]; if (r && j.p[0] === null) st.p = [...r.p];
+  publicar();
+}
+function proximoJogo() {
+  const i = JOGOS.findIndex(j => j.id === st.jogo);
+  const prox = JOGOS.slice(i + 1).find(j => !resultados[j.id]) || JOGOS[i + 1];
+  if (prox) trocarJogo(prox.id);
+}
+
+/* ---------- sincronização entre janelas ---------- */
+function publicar(aviso) {
+  gravar(CHAVE, st);
+  if (canal) canal.postMessage({ st, resultados, aviso });
+  render(); if (aviso) mostrarAviso(aviso);
+}
+function receber(dados) {
+  st = dados.st; resultados = dados.resultados || resultados;
+  render(); if (dados.aviso) mostrarAviso(dados.aviso);
+}
+if (canal) canal.onmessage = e => receber(e.data);
+else addEventListener("storage", e => { if (e.key === CHAVE && e.newValue) receber({ st: JSON.parse(e.newValue), resultados: ler(CHAVE_RES, {}) }); });
+
+/* ---------- desenho ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const iniciais = id => id ? ATLETAS[id][0].split(" ").map(p => p[0]).slice(0, 2).join("") : "?";
+
+const EXTS = ["jpg", "jpeg", "png", "webp"];
+function carregarFotos(raiz) {
+  raiz.querySelectorAll(".foto[data-id]").forEach(el => {
+    const id = el.dataset.id; if (!id || el.dataset.ok === id) return;
+    el.dataset.ok = id;
+    const img = new Image(); let k = 0;
+    img.alt = nome(id);
+    img.onload = () => { if (el.dataset.ok === id) el.replaceChildren(img); };
+    img.onerror = () => { if (++k < EXTS.length) img.src = `fotos/${id}.${EXTS[k]}`; };
+    img.src = `fotos/${id}.${EXTS[0]}`;
+  });
+}
+function lado(el, i) {
+  const id = st.p[i], f = fmt(), sac = !st.fim && st.p[0] && st.p[1] && sacador() === i;
+  const sp = setPoint(i), mp = sp && setsGanhos(i) + 1 >= precisa();
+  el.classList.toggle("sacando", !!sac);
+  const bolas = f.melhorDe > 1 ? Array.from({ length: precisa() }, (_, k) => `<i class="${k < setsGanhos(i) ? "ok" : ""}"></i>`).join("") : "";
+  const atual = el.dataset.id;
+  if (atual !== (id || "")) {
+    el.dataset.id = id || "";
+    el.innerHTML = `<div class="saque">Saque</div><div class="alerta display" hidden></div>
+      <div class="foto" data-id="${id || ""}"><span class="iniciais display">${esc(iniciais(id))}</span></div>
+      <div class="nome display"></div><div class="setor"></div><div class="sets-ganhos"></div><div class="pontos display"></div>`;
+    carregarFotos(el);
+  }
+  el.querySelector(".nome").textContent = nome(id);
+  el.querySelector(".setor").textContent = id ? ATLETAS[id][1] : "";
+  el.querySelector(".sets-ganhos").innerHTML = bolas;
+  const pt = el.querySelector(".pontos"); pt.textContent = st.cur[i];
+  const al = el.querySelector(".alerta");
+  al.hidden = !sp; al.className = "alerta display" + (mp ? " match" : "");
+  al.textContent = mp ? "Match point" : "Set point";
+}
+function render() {
+  const j = jogoPorId(st.jogo), f = fmt();
+  const L = st.inverter ? [1, 0] : [0, 1];
+  $("formato").innerHTML = `${esc(j.dia)} · <b>${esc(f.nome)}</b>`;
+  $("rotulo-fase").textContent = j.fase;
+  [0, 1].forEach(k => { lado($("lado" + k), L[k]); $("lado" + k).dataset.jogador = L[k]; });
+  const nSet = Math.min(st.sets.length + 1, f.melhorDe);
+  $("set-atual").textContent = st.fim ? "Fim de jogo" : f.melhorDe > 1 ? `${nSet}º set` : "Set único";
+  $("placar-sets").innerHTML = f.melhorDe > 1 ? `${setsGanhos(L[0])} × ${setsGanhos(L[1])}<small>sets</small>` : `<span class="vs">×</span>`;
+  $("historico").innerHTML = f.melhorDe > 1 ? st.sets.map((s, k) => `<li><span>${k + 1}º</span>${s[L[0]]} × ${s[L[1]]}</li>`).join("") : "";
+  renderVitoria(L);
+  renderControles(j, L);
+}
+function renderVitoria(L) {
+  const v = $("vitoria");
+  if (!st.fim) { v.hidden = true; v.dataset.chave = ""; return; }
+  const i = st.fim.venc, id = st.p[i], chave = st.jogo + id + st.sets.length;
+  if (v.dataset.chave === chave) return;
+  v.dataset.chave = chave; v.hidden = false;
+  const det = fmt().melhorDe > 1
+    ? `${setsGanhos(i)} × ${setsGanhos(1 - i)} em sets · ` + st.sets.map(s => `${s[i]}-${s[1 - i]}`).join(", ")
+    : `${st.sets[0][i]} × ${st.sets[0][1 - i]} contra ${nome(st.p[1 - i])}`;
+  const cores = ["#f7993a", "#3db554", "#ffffff", "#ffad57"];
+  const conf = Array.from({ length: 60 }, (_, k) => `<i class="confete" style="left:${Math.random() * 100}%;background:${cores[k % 4]};animation-duration:${2.5 + Math.random() * 3}s;animation-delay:${-Math.random() * 5}s"></i>`).join("");
+  v.innerHTML = `${conf}<div><div class="foto" data-id="${id}"><span class="iniciais display">${esc(iniciais(id))}</span></div>
+    <div class="tit display">${st.jogo === "F" ? "Campeão!" : "Vitória!"}</div>
+    <div class="quem display">${esc(nome(id))}</div><div class="det">${esc(det)}</div></div>`;
+  carregarFotos(v);
+}
+
+function pulo(i) {
+  const k = (st.inverter ? [1, 0] : [0, 1]).indexOf(i);
+  const el = $("lado" + k).querySelector(".pontos"); if (!el) return;
+  el.classList.remove("pulo"); void el.offsetWidth; el.classList.add("pulo");
+}
+let tAviso;
+function mostrarAviso([tit, sub]) {
+  const a = $("aviso");
+  a.innerHTML = `${esc(tit)}${sub ? `<small>${esc(sub)}</small>` : ""}`;
+  a.classList.add("on"); clearTimeout(tAviso); tAviso = setTimeout(() => a.classList.remove("on"), 3200);
+}
+
+/* ---------- controles ---------- */
+function preencherSelects() {
+  const sj = $("sel-jogo"); let html = "", grupo = "";
+  JOGOS.forEach(j => {
+    if (j.dia !== grupo) { html += (grupo ? "</optgroup>" : "") + `<optgroup label="${esc(j.dia)}">`; grupo = j.dia; }
+    const quem = j.p[0] ? `${primeiro(j.p[0])} × ${primeiro(j.p[1])}` : j.quem;
+    html += `<option value="${j.id}">${esc((j.num ? j.num + ". " : "") + quem + " — " + j.fase.replace("Fase de grupos · ", ""))}${resultados[j.id] ? " ✓" : ""}</option>`;
+  });
+  sj.innerHTML = html + "</optgroup>";
+  const op = `<option value="">A definir</option>` + Object.entries(ATLETAS).map(([id, [n, s]]) => `<option value="${id}">${esc(n)} (${s})</option>`).join("");
+  $("sel-p0").innerHTML = op; $("sel-p1").innerHTML = op;
+  $("sel-fmt").innerHTML = Object.entries(FORMATOS).map(([k, f]) => `<option value="${k}">${esc(f.nome)}</option>`).join("");
+}
+function renderControles(j, L) {
+  preencherSelects();
+  $("sel-jogo").value = st.jogo;
+  $("sel-p0").value = st.p[L[0]] || ""; $("sel-p1").value = st.p[L[1]] || "";
+  $("sel-fmt").value = st.fmt;
+  $("mais0").textContent = `+1 ${primeiro(st.p[L[0]])}  ←`;
+  $("mais1").textContent = `→  +1 ${primeiro(st.p[L[1]])}`;
+  const s1 = st.saque;
+  $("saque0").textContent = `${s1 === L[0] ? "● " : ""}${primeiro(st.p[L[0]])} saca primeiro`;
+  $("saque1").textContent = `${s1 === L[1] ? "● " : ""}${primeiro(st.p[L[1]])} saca primeiro`;
+  $("desfazer").disabled = !(st.hist && st.hist.length);
+}
+const L = () => (st.inverter ? [1, 0] : [0, 1]);
+$("sel-jogo").onchange = e => trocarJogo(e.target.value);
+[0, 1].forEach(k => {
+  $("sel-p" + k).onchange = e => mudar(() => { st.p[L()[k]] = e.target.value || null; });
+  $("mais" + k).onclick = () => ponto(L()[k]);
+  $("saque" + k).onclick = () => mudar(() => { st.saque = L()[k]; });
+});
+$("sel-fmt").onchange = e => mudar(() => { st.fmt = e.target.value; });
+$("desfazer").onclick = desfazer;
+$("inverter").onclick = () => mudar(() => { st.inverter = !st.inverter; });
+$("zerar").onclick = () => { if (confirm("Zerar o placar deste jogo?")) { if (st.fim) { delete resultados[st.jogo]; gravar(CHAVE_RES, resultados); } mudar(() => { Object.assign(st, { sets: [], cur: [0, 0], fim: null, trocou: false }); }); } };
+$("proximo").onclick = proximoJogo;
+$("cheia").onclick = telaCheia;
+$("copiar").onclick = copiarResultados;
+$("fechar").onclick = () => mostrarControles(false);
+$("engrenagem").onclick = () => mostrarControles(true);
+
+function mostrarControles(v) { $("controles").hidden = !v; $("engrenagem").hidden = v; }
+function telaCheia() { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.(); }
+function copiarResultados() {
+  const linhas = JOGOS.filter(j => resultados[j.id]).map(j => {
+    const r = resultados[j.id], v = r.p.indexOf(r.venc);
+    const pl = r.sets.length > 1 ? `${r.sets.filter(s => s[v] > s[1 - v]).length} × ${r.sets.filter(s => s[1 - v] > s[v]).length} (${r.sets.map(s => `${s[v]}-${s[1 - v]}`).join(", ")})` : `${r.sets[0][v]} × ${r.sets[0][1 - v]}`;
+    return `${j.dia} · ${j.fase.replace("Fase de grupos · ", "")}: *${primeiro(r.venc)}* ${pl} ${primeiro(r.p[1 - v])}`;
+  });
+  const txt = linhas.length ? "🏓 *Resultados*\n" + linhas.join("\n") : "Nenhum jogo terminado ainda.";
+  navigator.clipboard?.writeText(txt).then(() => mostrarAviso(["Copiado!", `${linhas.length} resultado(s)`]), () => prompt("Copie os resultados:", txt));
+}
+
+/* teclado */
+addEventListener("keydown", e => {
+  if (e.target.closest?.("select, input, textarea")) return;
+  const k = e.key.toLowerCase();
+  if (e.key === "ArrowLeft") { e.preventDefault(); ponto(L()[0]); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); ponto(L()[1]); }
+  else if (e.key === "Backspace" || (k === "z" && (e.ctrlKey || e.metaKey))) { e.preventDefault(); desfazer(); }
+  else if (k === "s") mudar(() => { st.inverter = !st.inverter; });
+  else if (k === "f") telaCheia();
+  else if (k === "h") mostrarControles($("controles").hidden);
+});
+let tMexeu; addEventListener("mousemove", () => { document.body.classList.add("mexeu"); clearTimeout(tMexeu); tMexeu = setTimeout(() => document.body.classList.remove("mexeu"), 2500); });
+
+if (new URLSearchParams(location.search).has("controle")) mostrarControles(true);
+render();
+</script>
+</body>
+</html>
