@@ -379,6 +379,7 @@ setInterval(tickCrono, 200);
 const PASSOS = []; { let d = 70, tot = 0; while (tot < 2800) { PASSOS.push(tot += d); d *= 1.12; } }
 const DUR_SORTEIO = PASSOS[PASSOS.length - 1];
 const MOSTRA_RESULTADO = 3000;   // quanto tempo o vencedor fica na tela antes de sumir
+const sorteando = () => !!st.sorteio && Date.now() - st.sorteio.ini < DUR_SORTEIO;   // esconde o saque até a roleta parar
 function sortearSaque() {
   if (!st.p[0] || !st.p[1]) return mostrarAviso(["Escolha os jogadores", "antes de sortear o saque"]);
   if (st.fim || st.sets.length || st.cur[0] || st.cur[1]) return mostrarAviso(["O jogo já começou", "o sorteio do saque é antes da partida"]);
@@ -404,6 +405,7 @@ function tickSorteio() {
   const passados = PASSOS.filter(x => x <= t).length;
   const on = fim ? s.venc : ((s.venc + PASSOS.length) + passados) % 2;   // termina exatamente no sorteado
   el.classList.toggle("fim", fim);
+  if (fim && el.dataset.revelado !== chave) { el.dataset.revelado = chave; render(); }   // mostra o saque no placar
   el.classList.toggle("saindo", t > DUR_SORTEIO + MOSTRA_RESULTADO - 450);
   [0, 1].forEach(k => document.getElementById("sj" + k).classList.toggle("on", L[k] === on));
   document.getElementById("sorteio-res").textContent = `${primeiro(st.p[s.venc])} saca primeiro!`;
@@ -441,7 +443,7 @@ function carregarFotos(raiz) {
   });
 }
 function lado(el, i) {
-  const id = st.p[i], f = fmt(), sac = !st.fim && st.p[0] && st.p[1] && sacador() === i;
+  const id = st.p[i], f = fmt(), sac = !st.fim && st.p[0] && st.p[1] && !sorteando() && sacador() === i;
   const sp = setPoint(i), mp = sp && setsGanhos(i) + 1 >= precisa();
   el.classList.toggle("sacando", !!sac);
   const bolas = f.melhorDe > 1 ? Array.from({ length: precisa() }, (_, k) => `<i class="${k < setsGanhos(i) ? "ok" : ""}"></i>`).join("") : "";
