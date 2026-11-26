@@ -221,7 +221,10 @@
     try {
       const r = await fetch(CSV_URL + "&t=" + Date.now());
       const linhas = parseCsv(await r.text()).slice(1).filter(l => l[0] && l[0].trim());
-      st = { pessoas: linhas.map(l => ({ nome: l[0].trim(), setor: (l[1] || "").trim() })), cabecas: [], saiu: [] };
+      // mantém as cabeças de chave já marcadas (pelo nome) ao atualizar a lista
+      const cabNomes = new Set(st.cabecas.map(i => st.pessoas[i] && st.pessoas[i].nome));
+      const pessoas = linhas.map(l => ({ nome: l[0].trim(), setor: (l[1] || "").trim() }));
+      st = { pessoas, cabecas: pessoas.map((p, i) => (cabNomes.has(p.nome) ? i : -1)).filter(i => i >= 0), saiu: [] };
       salvar(); render();
     } catch (e) {
       status("Não consegui ler a planilha. Adicione os nomes à mão abaixo.", "alerta"); render();
@@ -421,7 +424,8 @@
     salvar(); render();
   });
 
-  if (carregarSalvo()) render(); else buscarPlanilha();
+  // sorteio em andamento: retoma de onde parou. Antes de começar: sempre busca a lista atualizada da planilha
+  if (carregarSalvo() && st.saiu.length) render(); else buscarPlanilha();
 })();
 </script>
 </body>
