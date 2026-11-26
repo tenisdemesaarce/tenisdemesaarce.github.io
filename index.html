@@ -275,9 +275,16 @@
   .fases .card p b { color: var(--white); font-weight: 600; }
   .quando { margin: auto 0 0; padding: 14px 0 0; list-style: none; display: grid; gap: 6px; }
   /* tabela de jogos */
-  .tabela { display: grid; gap: 16px; grid-template-columns: repeat(5, 1fr); margin-bottom: 48px; }
-  @media (max-width: 1000px) { .tabela { grid-template-columns: repeat(2, 1fr); } .tabela .dia:last-child { grid-column: 1 / -1; } }
-  @media (max-width: 560px) { .tabela { grid-template-columns: 1fr; } }
+  .tabela { display: grid; gap: 16px; grid-template-columns: repeat(6, 1fr); margin-bottom: 48px; }
+  .tabela .dia { grid-column: span 3; }
+  .tabela .dia.grupos-dia { grid-column: span 2; }
+  @media (max-width: 1000px) { .tabela { grid-template-columns: 1fr; } .tabela .dia, .tabela .dia.grupos-dia { grid-column: auto; } }
+  .dia li time { grid-row: span 2; font: 700 14px/1.3 "Barlow Condensed", sans-serif; color: var(--green); letter-spacing: .02em; }
+  .grupos-dia li { grid-template-columns: 46px 1fr; }
+  .grupos-dia li::before { content: none; }
+  .dia li b i { font-style: normal; font-weight: 400; color: var(--muted); font-size: 14px; }
+  .grupo li span.atleta { color: var(--white); font-style: normal; font-weight: 700; line-height: 1.2; }
+  .grupo li span.atleta small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
   .dia { background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
   .dia header { padding: 12px 16px; border-bottom: 1px solid var(--line); }
   .dia header b { display: block; font: 800 italic 24px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; color: var(--orange); }
@@ -494,26 +501,44 @@
     </div>
 
     <h3 class="display sub-titulo">Os grupos</h3>
-    <p class="sub-intro">Os nomes entram depois do sorteio, que é ao vivo, em <span data-cfg="sorteio"></span>.</p>
+    <p class="sub-intro">Definidos no sorteio ao vivo de 26/11, no Auditório da ARCE.</p>
     <div class="grupos">
-      <div class="grupo"><h4 class="display">Grupo A</h4><ol><li><b>A1</b><span>a sortear</span></li><li><b>A2</b><span>a sortear</span></li><li><b>A3</b><span>a sortear</span></li><li><b>A4</b><span>a sortear</span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
-      <div class="grupo"><h4 class="display">Grupo B</h4><ol><li><b>B1</b><span>a sortear</span></li><li><b>B2</b><span>a sortear</span></li><li><b>B3</b><span>a sortear</span></li><li><b>B4</b><span>a sortear</span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
-      <div class="grupo"><h4 class="display">Grupo C</h4><ol><li><b>C1</b><span>a sortear</span></li><li><b>C2</b><span>a sortear</span></li><li><b>C3</b><span>a sortear</span></li><li><b>C4</b><span>a sortear</span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
-      <div class="grupo"><h4 class="display">Grupo D</h4><ol><li><b>D1</b><span>a sortear</span></li><li><b>D2</b><span>a sortear</span></li><li><b>D3</b><span>a sortear</span></li><li><b>D4</b><span>a sortear</span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
+      <div class="grupo"><h4 class="display">Grupo A</h4><ol><li><b>A1</b><span class="atleta">William Ferreira<small>CEE</small></span></li><li><b>A2</b><span class="atleta">Hélio Souza<small>CTR</small></span></li><li><b>A3</b><span class="atleta">Lívia Menescal<small>GAF</small></span></li><li><b>A4</b><span class="atleta">Diego Lima<small>CDR</small></span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
+      <div class="grupo"><h4 class="display">Grupo B</h4><ol><li><b>B1</b><span class="atleta">André Pereira<small>GAF</small></span></li><li><b>B2</b><span class="atleta">Alceu Júnior<small>CSB</small></span></li><li><b>B3</b><span class="atleta">Tamires Dias<small>CTR</small></span></li><li><b>B4</b><span class="atleta">Adriano Lima<small>GAF</small></span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
+      <div class="grupo"><h4 class="display">Grupo C</h4><ol><li><b>C1</b><span class="atleta">Lucas Vale<small>GAF</small></span></li><li><b>C2</b><span class="atleta">Deleon Parente<small>CEE</small></span></li><li><b>C3</b><span class="atleta">Matheus Scorsafava<small>GAF</small></span></li><li><b>C4</b><span class="atleta">Francelino Sousa<small>CTR</small></span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
+      <div class="grupo"><h4 class="display">Grupo D</h4><ol><li><b>D1</b><span class="atleta">Micael Oliveira<small>GAF</small></span></li><li><b>D2</b><span class="atleta">Davi Garcia<small>CTR</small></span></li><li><b>D3</b><span class="atleta">Joana Maia<small>CTR</small></span></li><li><b>D4</b><span class="atleta">Roberto Sales<small>CTR</small></span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
     </div>
 
     <h3 class="display sub-titulo">Tabela de jogos</h3>
-    <p class="sub-intro">Na segunda jogam os grupos A e B, e na terça os grupos C e D, com duas partidas para cada um. Na quarta acontece a última rodada de todos os grupos. Os jogos seguem a ordem da lista.</p>
+    <p class="sub-intro">Na segunda jogam os grupos A e B, e na terça os grupos C e D, com duas partidas para cada um. Na quarta acontece a última rodada de todos os grupos. Na fase de grupos, o primeiro jogo começa às 12h04 e os seguintes vêm a cada 8 minutos. A tolerância de atraso é de 5 minutos a partir do horário de cada jogo.</p>
     <div class="tabela">
-      <div class="dia"><header><b>Segunda</b><span>30/11 · grupos A e B, 1ª e 2ª rodadas</span></header><ol>
-        <li><b>A1 × A2</b></li><li><b>B1 × B2</b></li><li><b>A3 × A4</b></li><li><b>B3 × B4</b></li>
-        <li><b>A1 × A3</b></li><li><b>B1 × B3</b></li><li><b>A2 × A4</b></li><li><b>B2 × B4</b></li></ol></div>
-      <div class="dia"><header><b>Terça</b><span>01/12 · grupos C e D, 1ª e 2ª rodadas</span></header><ol>
-        <li><b>C1 × C2</b></li><li><b>D1 × D2</b></li><li><b>C3 × C4</b></li><li><b>D3 × D4</b></li>
-        <li><b>C1 × C3</b></li><li><b>D1 × D3</b></li><li><b>C2 × C4</b></li><li><b>D2 × D4</b></li></ol></div>
-      <div class="dia"><header><b>Quarta</b><span>02/12 · 3ª rodada, todos os grupos</span></header><ol>
-        <li><b>A1 × A4</b></li><li><b>B1 × B4</b></li><li><b>C1 × C4</b></li><li><b>D1 × D4</b></li>
-        <li><b>A2 × A3</b></li><li><b>B2 × B3</b></li><li><b>C2 × C3</b></li><li><b>D2 × D3</b></li></ol></div>
+      <div class="dia grupos-dia"><header><b>Segunda</b><span>30/11 · grupos A e B, 1ª e 2ª rodadas</span></header><ol>
+        <li><time>12:04</time><b>William <i>(CEE)</i> × Hélio <i>(CTR)</i></b><small>A1 × A2</small></li>
+        <li><time>12:12</time><b>André <i>(GAF)</i> × Alceu <i>(CSB)</i></b><small>B1 × B2</small></li>
+        <li><time>12:20</time><b>Lívia <i>(GAF)</i> × Diego <i>(CDR)</i></b><small>A3 × A4</small></li>
+        <li><time>12:28</time><b>Tamires <i>(CTR)</i> × Adriano <i>(GAF)</i></b><small>B3 × B4</small></li>
+        <li><time>12:36</time><b>William <i>(CEE)</i> × Lívia <i>(GAF)</i></b><small>A1 × A3</small></li>
+        <li><time>12:44</time><b>André <i>(GAF)</i> × Tamires <i>(CTR)</i></b><small>B1 × B3</small></li>
+        <li><time>12:52</time><b>Hélio <i>(CTR)</i> × Diego <i>(CDR)</i></b><small>A2 × A4</small></li>
+        <li><time>13:00</time><b>Alceu <i>(CSB)</i> × Adriano <i>(GAF)</i></b><small>B2 × B4</small></li></ol></div>
+      <div class="dia grupos-dia"><header><b>Terça</b><span>01/12 · grupos C e D, 1ª e 2ª rodadas</span></header><ol>
+        <li><time>12:04</time><b>Lucas <i>(GAF)</i> × Deleon <i>(CEE)</i></b><small>C1 × C2</small></li>
+        <li><time>12:12</time><b>Micael <i>(GAF)</i> × Davi <i>(CTR)</i></b><small>D1 × D2</small></li>
+        <li><time>12:20</time><b>Matheus <i>(GAF)</i> × Francelino <i>(CTR)</i></b><small>C3 × C4</small></li>
+        <li><time>12:28</time><b>Joana <i>(CTR)</i> × Roberto <i>(CTR)</i></b><small>D3 × D4</small></li>
+        <li><time>12:36</time><b>Lucas <i>(GAF)</i> × Matheus <i>(GAF)</i></b><small>C1 × C3</small></li>
+        <li><time>12:44</time><b>Micael <i>(GAF)</i> × Joana <i>(CTR)</i></b><small>D1 × D3</small></li>
+        <li><time>12:52</time><b>Deleon <i>(CEE)</i> × Francelino <i>(CTR)</i></b><small>C2 × C4</small></li>
+        <li><time>13:00</time><b>Davi <i>(CTR)</i> × Roberto <i>(CTR)</i></b><small>D2 × D4</small></li></ol></div>
+      <div class="dia grupos-dia"><header><b>Quarta</b><span>02/12 · 3ª rodada, todos os grupos</span></header><ol>
+        <li><time>12:04</time><b>William <i>(CEE)</i> × Diego <i>(CDR)</i></b><small>A1 × A4</small></li>
+        <li><time>12:12</time><b>André <i>(GAF)</i> × Adriano <i>(GAF)</i></b><small>B1 × B4</small></li>
+        <li><time>12:20</time><b>Lucas <i>(GAF)</i> × Francelino <i>(CTR)</i></b><small>C1 × C4</small></li>
+        <li><time>12:28</time><b>Micael <i>(GAF)</i> × Roberto <i>(CTR)</i></b><small>D1 × D4</small></li>
+        <li><time>12:36</time><b>Hélio <i>(CTR)</i> × Lívia <i>(GAF)</i></b><small>A2 × A3</small></li>
+        <li><time>12:44</time><b>Alceu <i>(CSB)</i> × Tamires <i>(CTR)</i></b><small>B2 × B3</small></li>
+        <li><time>12:52</time><b>Deleon <i>(CEE)</i> × Matheus <i>(GAF)</i></b><small>C2 × C3</small></li>
+        <li><time>13:00</time><b>Davi <i>(CTR)</i> × Joana <i>(CTR)</i></b><small>D2 × D3</small></li></ol></div>
       <div class="dia"><header><b>Quinta</b><span>03/12 · quartas de final</span></header><ol>
         <li><b>1ºA × 2ºB</b><small>Quartas 1</small></li><li><b>1ºC × 2ºD</b><small>Quartas 2</small></li>
         <li><b>1ºB × 2ºA</b><small>Quartas 3</small></li><li><b>1ºD × 2ºC</b><small>Quartas 4</small></li></ol></div>
