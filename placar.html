@@ -533,9 +533,10 @@ $("sel-jogo").onchange = e => trocarJogo(e.target.value);
 });
 $("sel-fmt").onchange = e => mudar(() => { st.fmt = e.target.value; });
 $("desfazer").onclick = desfazer;
-$("sortear-saque").onclick = sortearSaque;
-$("crono-aq").onclick = () => iniciarCrono("Aquecimento");
-$("crono-int").onclick = () => iniciarCrono("Intervalo");
+// estes três botões fecham os controles para a animação aparecer inteira no telão
+$("sortear-saque").onclick = () => { mostrarControles(false); sortearSaque(); };
+$("crono-aq").onclick = () => { mostrarControles(false); iniciarCrono("Aquecimento"); };
+$("crono-int").onclick = () => { mostrarControles(false); iniciarCrono("Intervalo"); };
 $("crono-parar").onclick = pararCrono;
 $("inverter").onclick = () => mudar(() => { st.inverter = !st.inverter; });
 $("zerar").onclick = () => { if (confirm("Zerar o placar deste jogo?")) { if (st.fim) { delete resultados[st.jogo]; gravar(CHAVE_RES, resultados); } mudar(() => { Object.assign(st, { sets: [], cur: [0, 0], fim: null, trocou: false }); }); } };
