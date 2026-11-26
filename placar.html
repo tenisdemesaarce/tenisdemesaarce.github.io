@@ -84,7 +84,10 @@
   /* ---------- controles ---------- */
   .engrenagem { position: fixed; right: 14px; bottom: 14px; z-index: 30; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .12); color: var(--white); padding: 8px 14px; font-weight: 700; opacity: 0; transition: opacity .3s; }
   body.mexeu .engrenagem, .engrenagem:focus-visible { opacity: 1; }
-  .controles { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: rgba(7, 22, 48, .97); border-top: 2px solid var(--orange); padding: 14px 16px 16px; max-height: 70vh; overflow: auto; }
+  .controles { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: rgba(7, 22, 48, .97); border-top: 2px solid var(--orange); padding: 14px 64px 16px 16px; max-height: 70vh; overflow: auto; }
+  .fechar-x { position: absolute; top: 10px; right: 12px; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .1); color: var(--white); font: 700 28px/1 "Barlow", sans-serif; display: grid; place-items: center; padding: 0 0 3px; }
+  .fechar-x:hover { background: var(--orange); color: var(--navy-900); }
+  .fechar-x:focus-visible { outline: 3px solid var(--white); outline-offset: 2px; }
   .ctl-linha { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; max-width: 1400px; margin: 0 auto 12px; }
   .ctl-linha:last-child { margin-bottom: 0; }
   .campo { display: grid; gap: 4px; font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
@@ -100,7 +103,7 @@
   .dica { color: var(--muted); font-size: 13px; max-width: 1400px; margin: 4px auto 0; }
   .dica kbd { background: rgba(255, 255, 255, .1); border-radius: 5px; padding: 1px 6px; font: 600 12px/1.6 "Barlow", sans-serif; color: var(--white); }
   .sep { flex: 1; }
-  @media (max-width: 700px) { body { overflow: auto; } .controles { position: static; max-height: none; } }
+  @media (max-width: 700px) { body { overflow: auto; } .controles { position: relative; max-height: none; } }
 </style>
 </head>
 <body>
@@ -128,6 +131,7 @@
 <button class="engrenagem" id="engrenagem" type="button" title="Mostrar controles (H)">⚙ Controles</button>
 
 <div class="controles" id="controles" hidden>
+  <button class="fechar-x" id="fechar-x" type="button" aria-label="Fechar controles" title="Fechar controles (H)">×</button>
   <div class="ctl-linha">
     <label class="campo jogo">Jogo<select id="sel-jogo"></select></label>
     <label class="campo">Esquerda<select id="sel-p0"></select></label>
@@ -411,6 +415,7 @@ $("proximo").onclick = proximoJogo;
 $("cheia").onclick = telaCheia;
 $("copiar").onclick = copiarResultados;
 $("fechar").onclick = () => mostrarControles(false);
+$("fechar-x").onclick = () => mostrarControles(false);
 $("engrenagem").onclick = () => mostrarControles(true);
 
 function mostrarControles(v) { $("controles").hidden = !v; $("engrenagem").hidden = v; }
