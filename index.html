@@ -280,8 +280,8 @@
   .tabela .dia.grupos-dia { grid-column: span 2; }
   @media (max-width: 1000px) { .tabela { grid-template-columns: 1fr; } .tabela .dia, .tabela .dia.grupos-dia { grid-column: auto; } }
   .dia li time { grid-row: span 2; font: 700 14px/1.3 "Barlow Condensed", sans-serif; color: var(--green); letter-spacing: .02em; }
-  .grupos-dia li { grid-template-columns: 46px 1fr; }
-  .grupos-dia li::before { content: none; }
+  .dia.grupos-dia li { grid-template-columns: 46px 1fr; }
+  .dia.grupos-dia li::before { content: none; display: none; }
   .dia li b i { font-style: normal; font-weight: 400; color: var(--muted); font-size: 14px; }
   .grupo li span.atleta { color: var(--white); font-style: normal; font-weight: 700; line-height: 1.2; }
   .grupo li span.atleta small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
