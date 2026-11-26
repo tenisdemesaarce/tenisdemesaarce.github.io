@@ -31,6 +31,7 @@
   .topo { display: flex; align-items: center; justify-content: space-between; gap: 2vw; }
   .marca { font-size: 3.4vh; }
   .marca span { color: var(--orange); }
+  .marca small { display: block; margin-top: .6vh; font: 600 2vh/1 "Barlow", sans-serif; color: var(--muted); letter-spacing: .22em; text-transform: uppercase; }
   .formato { font-size: 2.4vh; color: var(--muted); font-weight: 600; text-align: right; }
   .formato b { color: var(--green); }
   .fase { text-align: center; margin: 1.4vh 0 1vh; }
@@ -144,7 +145,7 @@
 
 <div class="tela">
   <div class="topo">
-    <div class="marca display">Tênis de Mesa <span>ARCE</span></div>
+    <div class="marca"><div class="display">2º Campeonato de Tênis de Mesa da <span>ARCE</span></div><small>Edição 2026</small></div>
     <div class="formato" id="formato"></div>
   </div>
   <div class="fase"><span class="rotulo display" id="rotulo-fase"></span></div>
