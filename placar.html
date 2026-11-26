@@ -442,6 +442,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 const iniciais = id => id ? ATLETAS[id][0].split(" ").map(p => p[0]).slice(0, 2).join("") : "?";
 
 const EXTS = ["jpg", "jpeg", "png", "webp"];
+const FOTOS_V = "3";   // mude este número sempre que trocar alguma foto, para o navegador não usar a antiga
 function carregarFotos(raiz) {
   raiz.querySelectorAll(".foto[data-id]").forEach(el => {
     const id = el.dataset.id; if (!id || el.dataset.ok === id) return;
@@ -449,8 +450,8 @@ function carregarFotos(raiz) {
     const img = new Image(); let k = 0;
     img.alt = nome(id);
     img.onload = () => { if (el.dataset.ok === id) el.replaceChildren(img); };
-    img.onerror = () => { if (++k < EXTS.length) img.src = `fotos/${id}.${EXTS[k]}`; };
-    img.src = `fotos/${id}.${EXTS[0]}`;
+    img.onerror = () => { if (++k < EXTS.length) img.src = `fotos/${id}.${EXTS[k]}?v=${FOTOS_V}`; };
+    img.src = `fotos/${id}.${EXTS[0]}?v=${FOTOS_V}`;
   });
 }
 function lado(el, i) {
