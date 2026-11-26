@@ -27,6 +27,9 @@
 
   .faixa-sim { background: repeating-linear-gradient(-45deg, #f7993a 0 18px, #ffad57 18px 36px); color: var(--navy-900); text-align: center; font: 800 italic 20px/1.2 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: 1px; padding: 8px 16px; }
   .faixa-sim a { color: var(--navy-900); }
+  .confirma { background: #3a1d0b; border-bottom: 2px solid var(--orange); padding: 12px 0; }
+  .confirma .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-weight: 700; font-size: 18px; }
+  .confirma span { margin-right: auto; }
   header.topo { padding: 18px 0; border-bottom: 1px solid var(--line); background: var(--navy-900); }
   header.topo .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
   header.topo h1 { margin: 0; font-size: clamp(24px, 3vw, 36px); }
@@ -122,6 +125,14 @@
     </div>
   </div>
 </header>
+
+<div class="confirma" id="confirma-recomecar" role="alertdialog" aria-labelledby="confirma-texto" hidden>
+  <div class="wrap">
+    <span id="confirma-texto">Apagar todos os nomes já sorteados e começar de novo?</span>
+    <button class="btn" id="btn-confirma-sim" type="button">Sim, apagar</button>
+    <button class="btn ghost" id="btn-confirma-nao" type="button">Cancelar</button>
+  </div>
+</div>
 
 <main class="wrap">
   <div class="palco-linha">
@@ -286,11 +297,15 @@
     render();
   }
 
+  // Recomeçar pede confirmação numa barra que fica na tela até a resposta
+  function pedirRecomeco() {
+    if (girando || !st.saiu.length) return;
+    $("confirma-recomecar").hidden = false;
+    $("btn-confirma-nao").focus();
+  }
   function recomecar() {
+    $("confirma-recomecar").hidden = true;
     if (girando) return;
-    const b = $("btn-recomecar");
-    if (st.saiu.length && b.dataset.confirma !== "1") { b.dataset.confirma = "1"; b.textContent = "Clique de novo para apagar o sorteio"; setTimeout(() => { b.dataset.confirma = ""; b.textContent = "Recomeçar"; }, 4000); return; }
-    b.dataset.confirma = ""; b.textContent = "Recomeçar";
     st.saiu = []; ultimoSlot = null; salvar();
     $("nome").textContent = "–"; $("nome").className = "nome-sorteado display"; $("setor").textContent = ""; $("destino").textContent = "";
     render();
@@ -310,6 +325,7 @@
     $("btn-sortear").disabled = girando || fim || !st.pessoas.length;
     $("btn-sortear").textContent = fim ? "Sorteio concluído" : (comecou ? "Sortear próximo" : "Começar sorteio");
     $("btn-desfazer").disabled = !comecou || girando;
+    $("btn-recomecar").disabled = !comecou || girando;
 
     // pote
     const pote = new Set(poteAtual());
@@ -370,11 +386,20 @@
   // eventos
   $("btn-sortear").addEventListener("click", sortear);
   $("btn-desfazer").addEventListener("click", desfazer);
-  $("btn-recomecar").addEventListener("click", recomecar);
+  $("btn-recomecar").addEventListener("click", pedirRecomeco);
+  $("btn-confirma-sim").addEventListener("click", recomecar);
+  $("btn-confirma-nao").addEventListener("click", () => { $("confirma-recomecar").hidden = true; });
   $("btn-copiar").addEventListener("click", copiar);
   $("btn-recarregar").addEventListener("click", buscarPlanilha);
   $("btn-tela-cheia").addEventListener("click", () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {}); else document.exitFullscreen?.(); });
-  document.addEventListener("keydown", e => { if (e.code === "Space" && !/INPUT|BUTTON|TEXTAREA/.test(e.target.tagName)) { e.preventDefault(); sortear(); } });
+  // barra de espaço = sortear, mesmo com o foco num botão (o espaço não aciona outro botão)
+  const digitando = e => /INPUT|TEXTAREA/.test(e.target.tagName);
+  document.addEventListener("keydown", e => {
+    if (e.code !== "Space" || digitando(e)) return;
+    e.preventDefault();
+    if (!e.repeat && $("confirma-recomecar").hidden) sortear();
+  });
+  document.addEventListener("keyup", e => { if (e.code === "Space" && !digitando(e)) e.preventDefault(); });
   $("lista-config").addEventListener("change", e => {
     const i = Number(e.target.dataset.cab); if (Number.isNaN(i)) return;
     if (e.target.checked) { if (st.cabecas.length >= 4) { e.target.checked = false; status("No máximo 4 cabeças de chave, uma por grupo.", "alerta"); return; } st.cabecas.push(i); }
