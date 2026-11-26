@@ -244,7 +244,7 @@
   const acabou = () => st.saiu.length >= total();
 
   // como a pessoa é conhecida, quando não é o primeiro + último nome
-  const APELIDOS = { "francisco micael nunes de oliveira": "Micael Oliveira", "josé roberto sales": "Roberto Sales" };
+  const APELIDOS = { "francisco micael nunes de oliveira": "Micael Oliveira", "josé roberto sales": "Roberto Sales", "francelino fanco leite de matos sousa": "Franco Sousa" };
   function nomeCurto(n) { const a = APELIDOS[n.trim().toLowerCase()]; if (a) return a; const p = n.split(/\s+/); return p.length > 2 ? p[0] + " " + p[p.length - 1] : n; }
   function titulo(n) { return n.toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(De|Da|Do|Dos|Das|E)\b/g, w => w.toLowerCase()); }
   const fmt = n => (n === n.toUpperCase() ? titulo(n) : n);
