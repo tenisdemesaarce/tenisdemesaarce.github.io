@@ -234,6 +234,15 @@
   function nomeCurto(n) { const a = APELIDOS[n.trim().toLowerCase()]; if (a) return a; const p = n.split(/\s+/); return p.length > 2 ? p[0] + " " + p[p.length - 1] : n; }
   function titulo(n) { return n.toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(De|Da|Do|Dos|Das|E)\b/g, w => w.toLowerCase()); }
   const fmt = n => (n === n.toUpperCase() ? titulo(n) : n);
+  const sigla = s => (s.length <= 6 ? s.toUpperCase() : s);          // "Ctr" → "CTR"
+  const curto = p => nomeCurto(fmt(p.nome));                          // nome e sobrenome
+  // primeiro nome; se dois inscritos tiverem o mesmo, usa nome e sobrenome
+  function primeiro(p) {
+    const n = curto(p).split(/\s+/)[0];
+    const iguais = st.pessoas.filter(o => curto(o).split(/\s+/)[0].toLowerCase() === n.toLowerCase()).length;
+    return iguais > 1 ? curto(p) : n;
+  }
+  const comSetor = p => primeiro(p) + (p.setor ? " (" + sigla(p.setor) + ")" : "");
 
   function sortear() {
     if (girando || acabou()) return;
@@ -315,7 +324,7 @@
     // grupos
     $("grupos").innerHTML = GRUPOS.map(g => `<div class="grupo"><h3 class="display">Grupo ${g}</h3><ol>${[1, 2, 3, 4].map(n => {
       const slot = g + n, p = quemNo(slot), alvo = !fim && !girando && slot === proximoSlot();
-      return `<li class="${alvo ? "alvo" : ""} ${slot === ultimoSlot ? "novo" : ""}"><b>${slot}</b>${p ? `<span class="quem">${esc(fmt(p.nome))}<small>${esc(p.setor)}</small></span>` : `<span class="vazio">${alvo ? "sorteando…" : "a sortear"}</span>`}</li>`;
+      return `<li class="${alvo ? "alvo" : ""} ${slot === ultimoSlot ? "novo" : ""}"><b>${slot}</b>${p ? `<span class="quem">${esc(curto(p))}<small>${esc(sigla(p.setor))}</small></span>` : `<span class="vazio">${alvo ? "sorteando…" : "a sortear"}</span>`}</li>`;
     }).join("")}</ol></div>`).join("");
 
     // configuração
@@ -330,8 +339,8 @@
     // tabela final
     $("tabela-final").hidden = !fim;
     if (fim) {
-      const nm = s => { const p = quemNo(s); return p ? esc(nomeCurto(fmt(p.nome))) : s; };
-      $("dias").innerHTML = DIAS.map(d => `<div class="dia"><h3 class="display">${d.nome}<small>${d.data} · ${d.rodada}</small></h3><ol>${d.jogos.map(([g, x, y]) => `<li>${nm(g + x)} × ${nm(g + y)} <span>(${g}${x} × ${g}${y})</span></li>`).join("")}</ol></div>`).join("");
+      const nm = s => { const p = quemNo(s); return p ? esc(comSetor(p)) : s; };
+      $("dias").innerHTML = DIAS.map(d => `<div class="dia"><h3 class="display">${d.nome}<small>${d.data} · ${d.rodada}</small></h3><ol>${d.jogos.map(([g, x, y]) => `<li>${nm(g + x)} × ${nm(g + y)}</li>`).join("")}</ol></div>`).join("");
     }
   }
 
@@ -339,11 +348,11 @@
     let t = (SIM ? "[SIMULAÇÃO – NÃO VALE]\n" : "") + "*Sorteio dos grupos – 2º Campeonato de Tênis de Mesa da ARCE*\n";
     GRUPOS.forEach(g => {
       t += "\n*Grupo " + g + "*\n";
-      [1, 2, 3, 4].forEach(n => { const p = quemNo(g + n); t += g + n + " – " + (p ? fmt(p.nome) + (p.setor ? " (" + p.setor + ")" : "") : "–") + "\n"; });
+      [1, 2, 3, 4].forEach(n => { const p = quemNo(g + n); t += g + n + " – " + (p ? curto(p) + (p.setor ? " (" + sigla(p.setor) + ")" : "") : "–") + "\n"; });
     });
     DIAS.forEach(d => {
       t += "\n*" + d.nome + ", " + d.data + " – " + d.rodada + "*\n";
-      d.jogos.forEach(([g, x, y]) => { const a = quemNo(g + x), b = quemNo(g + y); t += nomeCurto(fmt(a ? a.nome : g + x)) + " x " + nomeCurto(fmt(b ? b.nome : g + y)) + "\n"; });
+      d.jogos.forEach(([g, x, y]) => { const a = quemNo(g + x), b = quemNo(g + y); t += (a ? comSetor(a) : g + x) + " x " + (b ? comSetor(b) : g + y) + "\n"; });
     });
     t += "\nTabela completa: https://tenisdemesaarce.github.io/#disputa";
     return t;
