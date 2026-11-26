@@ -52,8 +52,8 @@
   .saque { position: absolute; top: 2vh; left: 1.4vw; display: flex; align-items: center; gap: .6vw; font: 800 italic 2.6vh/1 "Barlow Condensed", sans-serif; color: var(--orange); text-transform: uppercase; opacity: 0; transition: opacity .2s; }
   .saque::before { content: ""; width: 2.6vh; height: 2.6vh; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #ffe7cc 45%, #f7c48c); box-shadow: 0 0 1.4vh rgba(247, 153, 58, .8); }
   .lado.sacando .saque { opacity: 1; }
-  .alerta { position: absolute; top: 2vh; right: 1.4vw; background: var(--green); color: var(--navy-900); padding: .5vh 1vw .6vh; border-radius: 999px; font-size: 2.6vh; }
-  .alerta.match { background: var(--orange); animation: pisca 1s infinite; }
+  .alerta { position: absolute; top: 1.6vh; right: 1.2vw; background: var(--green); color: var(--navy-900); padding: .7vh 1.3vw .8vh; border-radius: 999px; font-size: 3.8vh; box-shadow: 0 0 3vh rgba(61, 181, 84, .45); }
+  .alerta.match { background: var(--orange); animation: pisca 1s infinite; box-shadow: 0 0 3vh rgba(247, 153, 58, .6); }
   @keyframes pisca { 50% { opacity: .55; } }
   .sets-ganhos { display: flex; gap: .8vh; margin-top: 1.2vh; min-height: 2.4vh; }
   .sets-ganhos i { width: 2.4vh; height: 2.4vh; border-radius: 50%; border: .35vh solid var(--muted); }
@@ -72,6 +72,11 @@
   .aviso { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.9); background: var(--orange); color: var(--navy-900); padding: 3vh 4vw; border-radius: 3vh; font-size: 8vh; text-align: center; box-shadow: 0 3vh 8vh rgba(0, 0, 0, .5); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 20; }
   .aviso small { display: block; font-size: .45em; margin-top: 1vh; }
   .aviso.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .aviso.set { background: var(--green); font-size: 12vh; padding: 3.5vh 5vw; }
+  .aviso.match { background: var(--orange); font-size: 13vh; padding: 3.5vh 5vw; box-shadow: 0 0 0 1.2vh rgba(247, 153, 58, .35), 0 3vh 10vh rgba(0, 0, 0, .6); }
+  .aviso.match.on { animation: bate .7s ease-in-out infinite alternate; }
+  @keyframes bate { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.06); } }
+  .aviso.set small, .aviso.match small { font-size: .38em; }
   .vitoria { position: fixed; inset: 0; background: radial-gradient(80% 80% at 50% 40%, rgba(19, 48, 107, .96), rgba(7, 22, 48, .98)); display: grid; place-items: center; z-index: 15; text-align: center; overflow: hidden; }
   .vitoria .foto { width: 34vh; height: 34vh; border-color: var(--orange); border-width: 1vh; margin: 0 auto; animation: entra .7s ease-out; }
   .vitoria .foto .iniciais { font-size: 14vh; }
@@ -299,6 +304,7 @@ function ponto(i) {
   if (st.fim || !st.p[0] || !st.p[1]) return;
   mudar(() => {
     let aviso = null;
+    const tinhaSetPoint = setPoint(i);
     st.crono = null; st.sorteio = null;                 // ponto marcado = jogo rolando
     st.cur[i]++;
     const { alvo, troca, melhorDe } = fmt(), a = st.cur[i], b = st.cur[1 - i];
@@ -315,6 +321,10 @@ function ponto(i) {
       }
     } else if (!st.trocou && st.sets.length === melhorDe - 1 && Math.max(a, b) === troca) {
       st.trocou = true; aviso = ["Troca de lado!", `${st.cur[0]} × ${st.cur[1]}`];   // set decisivo
+    }
+    if (!aviso && !st.fim && !tinhaSetPoint && setPoint(i)) {           // acabou de chegar ao set/match point
+      const match = setsGanhos(i) + 1 >= precisa();
+      aviso = [match ? "Match point!" : "Set point!", `${primeiro(st.p[i])} · ${st.cur[i]} × ${st.cur[1 - i]}`, match ? "match" : "set"];
     }
     return aviso;
   });
@@ -500,8 +510,9 @@ function pulo(i) {
   el.classList.remove("pulo"); void el.offsetWidth; el.classList.add("pulo");
 }
 let tAviso;
-function mostrarAviso([tit, sub]) {
+function mostrarAviso([tit, sub, tipo]) {
   const a = $("aviso");
+  a.className = "aviso display" + (tipo ? " " + tipo : "") + (a.classList.contains("on") ? " on" : "");
   a.innerHTML = `${esc(tit)}${sub ? `<small>${esc(sub)}</small>` : ""}`;
   a.classList.add("on"); clearTimeout(tAviso); tAviso = setTimeout(() => a.classList.remove("on"), 3200);
 }
