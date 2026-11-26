@@ -164,10 +164,14 @@
   const GRUPOS = ["A", "B", "C", "D"];
   const SLOTS = [1, 2, 3, 4].flatMap(p => GRUPOS.map(g => g + p));   // A1, B1, C1, D1, A2, …
   const CHAVE = "sorteio-tm-arce-2026";
+  // jogos de cada dia, na ordem: [grupo, posição, posição]
   const DIAS = [
-    { nome: "Segunda", data: "30/11", rodada: "1ª rodada", pares: [[1, 2], [3, 4]] },
-    { nome: "Terça", data: "01/12", rodada: "2ª rodada", pares: [[1, 3], [2, 4]] },
-    { nome: "Quarta", data: "02/12", rodada: "3ª rodada", pares: [[1, 4], [2, 3]] },
+    { nome: "Segunda", data: "30/11", rodada: "grupos A e B, 1ª e 2ª rodadas",
+      jogos: [["A", 1, 2], ["B", 1, 2], ["A", 3, 4], ["B", 3, 4], ["A", 1, 3], ["B", 1, 3], ["A", 2, 4], ["B", 2, 4]] },
+    { nome: "Terça", data: "01/12", rodada: "grupos C e D, 1ª e 2ª rodadas",
+      jogos: [["C", 1, 2], ["D", 1, 2], ["C", 3, 4], ["D", 3, 4], ["C", 1, 3], ["D", 1, 3], ["C", 2, 4], ["D", 2, 4]] },
+    { nome: "Quarta", data: "02/12", rodada: "3ª rodada, todos os grupos",
+      jogos: [["A", 1, 4], ["B", 1, 4], ["C", 1, 4], ["D", 1, 4], ["A", 2, 3], ["B", 2, 3], ["C", 2, 3], ["D", 2, 3]] },
   ];
 
   // estado: participantes, cabeças de chave e o que já saiu (na ordem)
@@ -318,7 +322,7 @@
     $("tabela-final").hidden = !fim;
     if (fim) {
       const nm = s => { const p = quemNo(s); return p ? esc(nomeCurto(fmt(p.nome))) : s; };
-      $("dias").innerHTML = DIAS.map(d => `<div class="dia"><h3 class="display">${d.nome}<small>${d.data} · ${d.rodada}</small></h3><ol>${d.pares.flatMap(([x, y]) => GRUPOS.map(g => `<li>${nm(g + x)} × ${nm(g + y)} <span>(${g}${x} × ${g}${y})</span></li>`)).join("")}</ol></div>`).join("");
+      $("dias").innerHTML = DIAS.map(d => `<div class="dia"><h3 class="display">${d.nome}<small>${d.data} · ${d.rodada}</small></h3><ol>${d.jogos.map(([g, x, y]) => `<li>${nm(g + x)} × ${nm(g + y)} <span>(${g}${x} × ${g}${y})</span></li>`).join("")}</ol></div>`).join("");
     }
   }
 
@@ -330,7 +334,7 @@
     });
     DIAS.forEach(d => {
       t += "\n*" + d.nome + ", " + d.data + " – " + d.rodada + "*\n";
-      d.pares.forEach(([x, y]) => GRUPOS.forEach(g => { const a = quemNo(g + x), b = quemNo(g + y); t += nomeCurto(fmt(a ? a.nome : g + x)) + " x " + nomeCurto(fmt(b ? b.nome : g + y)) + "\n"; }));
+      d.jogos.forEach(([g, x, y]) => { const a = quemNo(g + x), b = quemNo(g + y); t += nomeCurto(fmt(a ? a.nome : g + x)) + " x " + nomeCurto(fmt(b ? b.nome : g + y)) + "\n"; });
     });
     t += "\nTabela completa: https://tenisdemesaarce.github.io/#disputa";
     return t;
