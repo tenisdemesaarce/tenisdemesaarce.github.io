@@ -111,6 +111,8 @@
   .sorteio-res { font-size: 7.4vh; min-height: 1.1em; display: flex; align-items: center; justify-content: center; gap: 1.4vw; }
   .sorteio-res::before { content: ""; width: 5vh; height: 5vh; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #ffe7cc 45%, #f7c48c); box-shadow: 0 0 2vh rgba(247, 153, 58, .8); }
   .sorteio:not(.fim) .sorteio-res { visibility: hidden; }
+  .sorteio { transition: opacity .4s; }
+  .sorteio.saindo { opacity: 0; }
   .sorteio.fim .sj.on { animation: pulo .6s ease-out; }
 
   /* ---------- controles ---------- */
@@ -376,6 +378,7 @@ setInterval(tickCrono, 200);
 /* ---------- sorteio do saque ---------- */
 const PASSOS = []; { let d = 70, tot = 0; while (tot < 2800) { PASSOS.push(tot += d); d *= 1.12; } }
 const DUR_SORTEIO = PASSOS[PASSOS.length - 1];
+const MOSTRA_RESULTADO = 3000;   // quanto tempo o vencedor fica na tela antes de sumir
 function sortearSaque() {
   if (!st.p[0] || !st.p[1]) return mostrarAviso(["Escolha os jogadores", "antes de sortear o saque"]);
   if (st.fim || st.sets.length || st.cur[0] || st.cur[1]) return mostrarAviso(["O jogo já começou", "o sorteio do saque é antes da partida"]);
@@ -385,7 +388,7 @@ function sortearSaque() {
 function tickSorteio() {
   const el = document.getElementById("sorteio"), s = st.sorteio;
   const t = s ? Date.now() - s.ini : 0;
-  if (!s || t > DUR_SORTEIO + 4500 || t < -2000) { el.hidden = true; return; }
+  if (!s || t > DUR_SORTEIO + MOSTRA_RESULTADO || t < -2000) { el.hidden = true; return; }
   const L = st.inverter ? [1, 0] : [0, 1];
   const chave = s.ini + "|" + L.map(i => st.p[i]).join("|");
   if (el.dataset.chave !== chave) {
@@ -401,6 +404,7 @@ function tickSorteio() {
   const passados = PASSOS.filter(x => x <= t).length;
   const on = fim ? s.venc : ((s.venc + PASSOS.length) + passados) % 2;   // termina exatamente no sorteado
   el.classList.toggle("fim", fim);
+  el.classList.toggle("saindo", t > DUR_SORTEIO + MOSTRA_RESULTADO - 450);
   [0, 1].forEach(k => document.getElementById("sj" + k).classList.toggle("on", L[k] === on));
   document.getElementById("sorteio-res").textContent = `${primeiro(st.p[s.venc])} saca primeiro!`;
 }
