@@ -25,6 +25,8 @@
   button { font: inherit; cursor: pointer; }
   .wrap { width: min(1400px, 100% - 32px); margin-inline: auto; }
 
+  .faixa-sim { background: repeating-linear-gradient(-45deg, #f7993a 0 18px, #ffad57 18px 36px); color: var(--navy-900); text-align: center; font: 800 italic 20px/1.2 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: 1px; padding: 8px 16px; }
+  .faixa-sim a { color: var(--navy-900); }
   header.topo { padding: 18px 0; border-bottom: 1px solid var(--line); background: var(--navy-900); }
   header.topo .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
   header.topo h1 { margin: 0; font-size: clamp(24px, 3vw, 36px); }
@@ -108,6 +110,8 @@
 </head>
 <body>
 
+<div class="faixa-sim" id="faixa-sim" hidden>Simulação · este sorteio não vale · <a href="sorteio.html">ir para o sorteio oficial</a></div>
+
 <header class="topo">
   <div class="wrap">
     <h1 class="display">Sorteio dos grupos · <span>2<i class="ord">o</i> Campeonato de Tênis de Mesa da ARCE</span></h1>
@@ -163,7 +167,10 @@
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcmgJ5Lu7GUVjhQGLLzu6wJg0W1RLDbAslpSimme3mrVimWdqvRSYoew00spy43lnV5hgP1VR01rp9/pub?gid=91741312&single=true&output=csv";
   const GRUPOS = ["A", "B", "C", "D"];
   const SLOTS = [1, 2, 3, 4].flatMap(p => GRUPOS.map(g => g + p));   // A1, B1, C1, D1, A2, …
-  const CHAVE = "sorteio-tm-arce-2026";
+  // ?simulacao na URL: ensaio com faixa na tela e progresso guardado à parte do sorteio real
+  const SIM = new URLSearchParams(location.search).has("simulacao");
+  const CHAVE = "sorteio-tm-arce-2026" + (SIM ? "-simulacao" : "");
+  if (SIM) { document.getElementById("faixa-sim").hidden = false; document.title = "SIMULAÇÃO · " + document.title; }
   // jogos de cada dia, na ordem: [grupo, posição, posição]
   const DIAS = [
     { nome: "Segunda", data: "30/11", rodada: "grupos A e B, 1ª e 2ª rodadas",
@@ -327,7 +334,7 @@
   }
 
   function textoResultado() {
-    let t = "*Sorteio dos grupos – 2º Campeonato de Tênis de Mesa da ARCE*\n";
+    let t = (SIM ? "[SIMULAÇÃO – NÃO VALE]\n" : "") + "*Sorteio dos grupos – 2º Campeonato de Tênis de Mesa da ARCE*\n";
     GRUPOS.forEach(g => {
       t += "\n*Grupo " + g + "*\n";
       [1, 2, 3, 4].forEach(n => { const p = quemNo(g + n); t += g + n + " – " + (p ? fmt(p.nome) + (p.setor ? " (" + p.setor + ")" : "") : "–") + "\n"; });
