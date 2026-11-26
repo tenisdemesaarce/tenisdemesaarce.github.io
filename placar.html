@@ -98,6 +98,21 @@
   .crono.fim .crono-card { animation: pisca 1s infinite; border-color: var(--orange); }
   .crono.fim .crono-tempo, .crono.fim .crono-sub { color: var(--orange); }
 
+  /* sorteio de quem saca primeiro */
+  .sorteio { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(7, 22, 48, .72); z-index: 13; }
+  .sorteio-card { background: rgba(11, 33, 71, .97); border: .4vh solid var(--orange); border-radius: 4vh; padding: 4vh 5vw 4.4vh; text-align: center; box-shadow: 0 3vh 8vh rgba(0, 0, 0, .5); }
+  .sorteio-tit { font-size: 6.4vh; color: var(--orange); }
+  .sorteio-jog { display: flex; justify-content: center; gap: 4vw; margin: 4vh 0 3vh; }
+  .sj { padding: 2.6vh 2.2vw 2.2vh; border-radius: 3vh; border: .5vh solid transparent; opacity: .45; transition: transform .08s, opacity .08s, background .08s, border-color .08s; }
+  .sj.on { opacity: 1; border-color: var(--orange); background: rgba(247, 153, 58, .14); transform: scale(1.07); }
+  .sj .foto { width: 24vh; height: 24vh; margin: 0 auto; }
+  .sj.on .foto { border-color: var(--orange); }
+  .sj .nome { font-size: 6vh; margin-top: 1.8vh; }
+  .sorteio-res { font-size: 7.4vh; min-height: 1.1em; display: flex; align-items: center; justify-content: center; gap: 1.4vw; }
+  .sorteio-res::before { content: ""; width: 5vh; height: 5vh; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #ffe7cc 45%, #f7c48c); box-shadow: 0 0 2vh rgba(247, 153, 58, .8); }
+  .sorteio:not(.fim) .sorteio-res { visibility: hidden; }
+  .sorteio.fim .sj.on { animation: pulo .6s ease-out; }
+
   /* ---------- controles ---------- */
   .engrenagem { position: fixed; right: 14px; bottom: 14px; z-index: 30; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .12); color: var(--white); padding: 8px 14px; font-weight: 700; opacity: 0; transition: opacity .3s; }
   body.mexeu .engrenagem, .engrenagem:focus-visible { opacity: 1; }
@@ -144,6 +159,13 @@
 
 <div class="aviso display" id="aviso"></div>
 <div class="vitoria" id="vitoria" hidden></div>
+<div class="sorteio" id="sorteio" hidden>
+  <div class="sorteio-card">
+    <div class="sorteio-tit display">Quem saca primeiro?</div>
+    <div class="sorteio-jog"><div class="sj" id="sj0"></div><div class="sj" id="sj1"></div></div>
+    <div class="sorteio-res display" id="sorteio-res"></div>
+  </div>
+</div>
 <div class="crono" id="crono" hidden>
   <div class="crono-card">
     <div class="crono-tipo display" id="crono-tipo"></div>
@@ -167,6 +189,7 @@
     <button class="btn ponto" id="mais1" type="button"></button>
     <button class="btn ghost" id="desfazer" type="button">↶ Desfazer</button>
     <span class="sep"></span>
+    <button class="btn" id="sortear-saque" type="button">🎲 Sortear saque (R)</button>
     <button class="btn ghost" id="saque0" type="button"></button>
     <button class="btn ghost" id="saque1" type="button"></button>
     <button class="btn ghost" id="inverter" type="button">⇄ Inverter lados</button>
@@ -184,7 +207,7 @@
     <span class="sep"></span>
     <button class="btn ghost" id="fechar" type="button">Ocultar controles (H)</button>
   </div>
-  <p class="dica">Atalhos: <kbd>←</kbd> ponto da esquerda · <kbd>→</kbd> ponto da direita · <kbd>Backspace</kbd> desfazer · <kbd>S</kbd> inverter lados · <kbd>F</kbd> tela cheia · <kbd>A</kbd> aquecimento · <kbd>I</kbd> intervalo · <kbd>P</kbd> parar cronômetro · <kbd>H</kbd> mostrar/ocultar controles. Para controlar de outra janela no mesmo computador, abra <b>placar.html?controle</b>: as duas ficam sincronizadas.</p>
+  <p class="dica">Atalhos: <kbd>←</kbd> ponto da esquerda · <kbd>→</kbd> ponto da direita · <kbd>Backspace</kbd> desfazer · <kbd>S</kbd> inverter lados · <kbd>R</kbd> sortear quem saca · <kbd>F</kbd> tela cheia · <kbd>A</kbd> aquecimento · <kbd>I</kbd> intervalo · <kbd>P</kbd> parar cronômetro · <kbd>H</kbd> mostrar/ocultar controles. Para controlar de outra janela no mesmo computador, abra <b>placar.html?controle</b>: as duas ficam sincronizadas.</p>
 </div>
 
 <script>
@@ -237,7 +260,7 @@ let st = ler(CHAVE, null);
 let canal = null; try { canal = new BroadcastChannel(CHAVE); } catch {}
 
 function novoEstado(jogo) {
-  return { jogo: jogo.id, p: [...jogo.p], fmt: jogo.fmt, sets: [], cur: [0, 0], saque: 0, inverter: false, fim: null, trocou: false, crono: null, hist: [] };
+  return { jogo: jogo.id, p: [...jogo.p], fmt: jogo.fmt, sets: [], cur: [0, 0], saque: 0, inverter: false, fim: null, trocou: false, crono: null, sorteio: null, hist: [] };
 }
 function jogoPadrao() {
   const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Fortaleza" });
@@ -273,7 +296,7 @@ function ponto(i) {
   if (st.fim || !st.p[0] || !st.p[1]) return;
   mudar(() => {
     let aviso = null;
-    st.crono = null;                                    // ponto marcado = jogo rolando
+    st.crono = null; st.sorteio = null;                 // ponto marcado = jogo rolando
     st.cur[i]++;
     const { alvo, troca, melhorDe } = fmt(), a = st.cur[i], b = st.cur[1 - i];
     if (a >= alvo && a - b >= 2) {                       // fechou o set
@@ -349,6 +372,39 @@ function tickCrono() {
   if (rest <= 0 && !bipou[c.ini]) { bipou[c.ini] = 1; if (rest > -1500) bip(); }
 }
 setInterval(tickCrono, 200);
+
+/* ---------- sorteio do saque ---------- */
+const PASSOS = []; { let d = 70, tot = 0; while (tot < 2800) { PASSOS.push(tot += d); d *= 1.12; } }
+const DUR_SORTEIO = PASSOS[PASSOS.length - 1];
+function sortearSaque() {
+  if (!st.p[0] || !st.p[1]) return mostrarAviso(["Escolha os jogadores", "antes de sortear o saque"]);
+  if (st.fim || st.sets.length || st.cur[0] || st.cur[1]) return mostrarAviso(["O jogo já começou", "o sorteio do saque é antes da partida"]);
+  const venc = crypto.getRandomValues(new Uint8Array(1))[0] % 2;
+  mudar(() => { st.saque = venc; st.sorteio = { ini: Date.now(), venc }; st.crono = null; });
+}
+function tickSorteio() {
+  const el = document.getElementById("sorteio"), s = st.sorteio;
+  const t = s ? Date.now() - s.ini : 0;
+  if (!s || t > DUR_SORTEIO + 4500 || t < -2000) { el.hidden = true; return; }
+  const L = st.inverter ? [1, 0] : [0, 1];
+  const chave = s.ini + "|" + L.map(i => st.p[i]).join("|");
+  if (el.dataset.chave !== chave) {
+    el.dataset.chave = chave;
+    [0, 1].forEach(k => {
+      const id = st.p[L[k]];
+      document.getElementById("sj" + k).innerHTML = `<div class="foto" data-id="${id}"><span class="iniciais display">${esc(iniciais(id))}</span></div><div class="nome display">${esc(primeiro(id))}</div>`;
+    });
+    carregarFotos(el);
+  }
+  el.hidden = false;
+  const fim = t >= DUR_SORTEIO;
+  const passados = PASSOS.filter(x => x <= t).length;
+  const on = fim ? s.venc : ((s.venc + PASSOS.length) + passados) % 2;   // termina exatamente no sorteado
+  el.classList.toggle("fim", fim);
+  [0, 1].forEach(k => document.getElementById("sj" + k).classList.toggle("on", L[k] === on));
+  document.getElementById("sorteio-res").textContent = `${primeiro(st.p[s.venc])} saca primeiro!`;
+}
+setInterval(tickSorteio, 40);
 
 /* ---------- sincronização entre janelas ---------- */
 function publicar(aviso) {
@@ -477,6 +533,7 @@ $("sel-jogo").onchange = e => trocarJogo(e.target.value);
 });
 $("sel-fmt").onchange = e => mudar(() => { st.fmt = e.target.value; });
 $("desfazer").onclick = desfazer;
+$("sortear-saque").onclick = sortearSaque;
 $("crono-aq").onclick = () => iniciarCrono("Aquecimento");
 $("crono-int").onclick = () => iniciarCrono("Intervalo");
 $("crono-parar").onclick = pararCrono;
@@ -511,6 +568,7 @@ addEventListener("keydown", e => {
   else if (k === "s") mudar(() => { st.inverter = !st.inverter; });
   else if (k === "f") telaCheia();
   else if (k === "h") mostrarControles($("controles").hidden);
+  else if (k === "r") sortearSaque();
   else if (k === "a") iniciarCrono("Aquecimento");
   else if (k === "i") iniciarCrono("Intervalo");
   else if (k === "p") pararCrono();
