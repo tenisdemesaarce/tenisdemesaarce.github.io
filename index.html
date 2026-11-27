@@ -290,6 +290,39 @@
   .dia ol { list-style: none; margin: 0; padding: 6px 16px 10px; counter-reset: j; }
   .dia li { counter-increment: j; display: grid; grid-template-columns: 22px 1fr; align-items: baseline; padding: 6px 0; border-bottom: 1px dashed var(--line); font-variant-numeric: tabular-nums; }
   .dia li:last-child { border-bottom: 0; }
+  /* resultados ao vivo (lidos do placar) */
+  .dia li .res { grid-column: 2; font-size: 14px; font-weight: 700; color: var(--green); }
+  .dia li .res small { display: inline; color: var(--muted); font-weight: 500; }
+  .dia li.feito b { font-weight: 500; color: var(--muted); }
+  .dia li.feito b .venc { color: var(--white); font-weight: 800; }
+  .dia li.aovivo { background: rgba(232, 84, 74, .1); margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+  .dia li.aovivo .res { color: #ff7b70; }
+  .tag-vivo { display: inline-block; background: #e8544a; color: #fff; font: 800 italic 13px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .5px; padding: 4px 7px 3px; border-radius: 5px; margin-right: 6px; animation: piscar 1.2s infinite; vertical-align: 1px; }
+  @keyframes piscar { 50% { opacity: .5; } }
+  .aovivo-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: rgba(232, 84, 74, .1); border: 1px solid rgba(232, 84, 74, .55); border-radius: var(--radius); padding: 14px 18px; margin: -8px 0 32px; font-size: 18px; }
+  .aovivo-banner .tag-vivo { font-size: 16px; }
+  .aovivo-banner .placar-vivo { font: 800 italic 30px/1 "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; }
+  .aovivo-banner .fase-vivo { color: var(--muted); font-size: 15px; width: 100%; }
+  .classif { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); margin-bottom: 48px; }
+  @media (max-width: 760px) { .classif { grid-template-columns: 1fr; } }
+  .tab-grupo { background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .tab-grupo h4 { margin: 0; padding: 10px 16px; background: var(--orange); color: var(--navy-900); font-size: 24px; display: flex; justify-content: space-between; align-items: baseline; }
+  .tab-grupo h4 small { font: 600 13px/1 "Barlow", sans-serif; text-transform: none; font-style: normal; letter-spacing: 0; }
+  .tab-grupo table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .tab-grupo th { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); font-weight: 700; padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--line); }
+  .tab-grupo th:nth-child(2) { text-align: left; }
+  .tab-grupo td { padding: 8px 6px; text-align: center; border-bottom: 1px dashed var(--line); }
+  .tab-grupo tr:last-child td { border-bottom: 0; }
+  .tab-grupo td.atl { text-align: left; font-weight: 700; }
+  .tab-grupo td.atl small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); }
+  .tab-grupo td.pos { font: 800 italic 20px/1 "Barlow Condensed", sans-serif; color: var(--muted); width: 34px; }
+  .tab-grupo td.v { font-weight: 800; color: var(--white); }
+  .tab-grupo tr.passa td.pos { color: var(--green); }
+  .tab-grupo tr.passa td:first-child { box-shadow: inset 4px 0 0 var(--green); }
+  .tab-grupo tr.certo td.atl::after { content: " ✓"; color: var(--green); }
+  .jogo .slot.venceu { color: var(--green); font-weight: 800; }
+  .jogo .slot .sets { float: right; font-weight: 800; color: var(--white); }
+  .jogo.aovivo { border-color: #e8544a; }
   .dia li::before { content: counter(j); font-size: 13px; color: var(--muted); }
   .dia li b { font-weight: 700; }
   .dia li small { display: block; grid-column: 2; font-size: 13px; color: var(--muted); }
@@ -487,6 +520,7 @@
   <div class="wrap">
     <h2 class="display">Fórmula de <em>disputa</em></h2>
     <p class="intro">Os 16 inscritos são divididos em 4 grupos de 4. Os 2 primeiros de cada grupo avançam para o mata-mata, até a final.</p>
+    <div class="aovivo-banner" id="aovivo" hidden></div>
     <div class="grid fases">
       <div class="card"><div class="num">16 → 8</div><h3>Fase de grupos</h3><p>Todos contra todos dentro do grupo: cada um faz 3 partidas. Jogos em <b>1 set de 15 pontos</b>. Avançam os 2 primeiros de cada grupo.</p>
         <ul class="quando"><li><b>Seg 30/11</b><span>grupos A e B, 1ª e 2ª rodadas</span></li><li><b>Ter 01/12</b><span>grupos C e D, 1ª e 2ª rodadas</span></li><li><b>Qua 02/12</b><span>3ª rodada de todos os grupos</span></li></ul></div>
@@ -506,6 +540,10 @@
       <div class="grupo"><h4 class="display">Grupo C</h4><ol><li><b>C1</b><span class="atleta">Lucas Vale<small>GAF</small></span></li><li><b>C2</b><span class="atleta">Deleon Parente<small>CEE</small></span></li><li><b>C3</b><span class="atleta">Matheus Scorsafava<small>GAF</small></span></li><li><b>C4</b><span class="atleta">Franco Sousa<small>CTR</small></span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
       <div class="grupo"><h4 class="display">Grupo D</h4><ol><li><b>D1</b><span class="atleta">Micael Oliveira<small>GAF</small></span></li><li><b>D2</b><span class="atleta">Davi Garcia<small>CTR</small></span></li><li><b>D3</b><span class="atleta">Joana Maia<small>CTR</small></span></li><li><b>D4</b><span class="atleta">Roberto Sales<small>CTR</small></span></li></ol><div class="rodape">6 jogos · avançam 1º e 2º</div></div>
     </div>
+
+    <h3 class="display sub-titulo" id="classificacao">Classificação</h3>
+    <p class="sub-intro">Atualizada automaticamente ao fim de cada jogo. Vale o número de vitórias; no empate, confronto direto, saldo de sets e saldo de pontos.</p>
+    <div class="classif" id="classif"></div>
 
     <h3 class="display sub-titulo">Tabela de jogos</h3>
     <p class="sub-intro">Na segunda jogam os grupos A e B, e na terça os grupos C e D, com duas partidas para cada um. Na quarta acontece a última rodada de todos os grupos. Todo dia o início é às 12h, e os jogos seguem em sequência, na ordem da lista.</p>
@@ -582,7 +620,7 @@
     </div>
     <div class="card terceiro">
       <h3>Disputa de 3º lugar</h3>
-      <p>Sex 04/12 · Perdedor da Semifinal 1 × Perdedor da Semifinal 2, em melhor de 3 sets.</p>
+      <p id="terceiro-txt">Sex 04/12 · Perdedor da Semifinal 1 × Perdedor da Semifinal 2, em melhor de 3 sets.</p>
     </div>
   </div>
 </section>
@@ -960,6 +998,162 @@
   } else {
     renderVagas(0);
   }
+</script>
+<script>
+/* Resultados em tempo real: lê o mesmo banco do placar (Firebase) e preenche classificação, tabela e chave. */
+(() => {
+  const FB = "https://placar-tenis-de-mesa-arce-default-rtdb.firebaseio.com/placar-tm-arce-2026/agora.json";
+  const A = {
+    "william-ferreira": ["William Ferreira", "CEE"], "helio-souza": ["Hélio Souza", "CTR"], "livia-menescal": ["Lívia Menescal", "GAF"], "diego-lima": ["Diego Lima", "CDR"],
+    "andre-pereira": ["André Pereira", "GAF"], "alceu-junior": ["Alceu Júnior", "CSB"], "tamires-dias": ["Tamires Dias", "CTR"], "adriano-lima": ["Adriano Lima", "GAF"],
+    "lucas-vale": ["Lucas Vale", "GAF"], "deleon-parente": ["Deleon Parente", "CEE"], "matheus-scorsafava": ["Matheus Scorsafava", "GAF"], "franco-sousa": ["Franco Sousa", "CTR"],
+    "micael-oliveira": ["Micael Oliveira", "GAF"], "davi-garcia": ["Davi Garcia", "CTR"], "joana-maia": ["Joana Maia", "CTR"], "roberto-sales": ["Roberto Sales", "CTR"],
+  };
+  const G = { A: ["william-ferreira", "helio-souza", "livia-menescal", "diego-lima"], B: ["andre-pereira", "alceu-junior", "tamires-dias", "adriano-lima"],
+              C: ["lucas-vale", "deleon-parente", "matheus-scorsafava", "franco-sousa"], D: ["micael-oliveira", "davi-garcia", "joana-maia", "roberto-sales"] };
+  const DIAS = [["2026-11-30", [["A",1,2],["B",1,2],["A",3,4],["B",3,4],["A",1,3],["B",1,3],["A",2,4],["B",2,4]]],
+                ["2026-12-01", [["C",1,2],["D",1,2],["C",3,4],["D",3,4],["C",1,3],["D",1,3],["C",2,4],["D",2,4]]],
+                ["2026-12-02", [["A",1,4],["B",1,4],["C",1,4],["D",1,4],["A",2,3],["B",2,3],["C",2,3],["D",2,3]]]];
+  const JG = []; DIAS.forEach(([iso, js]) => js.forEach(([g, a, b], k) => JG.push({ id: iso + "-" + (k + 1), g, k: k + 1, p: [G[g][a - 1], G[g][b - 1]] })));
+  const MM = ["Q1", "Q2", "Q3", "Q4", "S1", "S2", "T3", "F"];
+  const NOME_MM = { Q1: "Quartas 1", Q2: "Quartas 2", Q3: "Quartas 3", Q4: "Quartas 4", S1: "Semifinal 1", S2: "Semifinal 2", T3: "Disputa de 3º lugar", F: "Final" };
+  const PADRAO = { Q1: ["1ºA", "2ºB"], Q2: ["1ºC", "2ºD"], Q3: ["1ºB", "2ºA"], Q4: ["1ºD", "2ºC"], S1: ["Venc. Q1", "Venc. Q2"], S2: ["Venc. Q3", "Venc. Q4"],
+                   T3: ["Perd. S1", "Perd. S2"], F: ["Venc. S1", "Venc. S2"] };
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const nome = id => A[id] ? A[id][0] : "?";
+  const prim = id => A[id] ? A[id][0].split(" ")[0] : "?";
+  const setor = id => A[id] ? A[id][1] : "";
+  let R = {}, S = null;
+
+  const venceuSet = (s, i) => s[i] > s[1 - i];
+  const setsDe = (r, i) => r.sets.filter(s => venceuSet(s, i)).length;
+
+  function classifica(g) {
+    const t = {}; G[g].forEach(id => { t[id] = { id, J: 0, V: 0, D: 0, SG: 0, SP: 0, PF: 0, PC: 0 }; });
+    const jogos = JG.filter(j => j.g === g); let feitos = 0;
+    jogos.forEach(j => {
+      const r = R[j.id]; if (!r) return; feitos++;
+      const a = r.p[0], b = r.p[1]; if (!t[a] || !t[b]) return;
+      t[a].J++; t[b].J++;
+      if (r.venc === a) { t[a].V++; t[b].D++; } else { t[b].V++; t[a].D++; }
+      r.sets.forEach(s => {
+        t[a].PF += s[0]; t[a].PC += s[1]; t[b].PF += s[1]; t[b].PC += s[0];
+        if (venceuSet(s, 0)) { t[a].SG++; t[b].SP++; } else { t[b].SG++; t[a].SP++; }
+      });
+    });
+    const confronto = (x, y) => {
+      const j = jogos.find(j => R[j.id] && R[j.id].p.includes(x) && R[j.id].p.includes(y));
+      return j ? (R[j.id].venc === x ? -1 : 1) : 0;
+    };
+    const lista = Object.values(t).sort((x, y) => y.V - x.V || (y.SG - y.SP) - (x.SG - x.SP) || (y.PF - y.PC) - (x.PF - x.PC) || G[g].indexOf(x.id) - G[g].indexOf(y.id));
+    // empate entre exatamente dois jogadores: vale o confronto direto
+    for (let i = 0; i < lista.length - 1; i++) {
+      const mesmo = lista.filter(o => o.V === lista[i].V);
+      if (mesmo.length === 2 && lista[i + 1].V === lista[i].V && confronto(lista[i].id, lista[i + 1].id) > 0) {
+        const tmp = lista[i]; lista[i] = lista[i + 1]; lista[i + 1] = tmp;
+      }
+    }
+    return { lista, completo: feitos === jogos.length, feitos };
+  }
+
+  function jogadoresMM(id, C) {
+    if (R[id]) return R[id].p;
+    if (S && S.jogo === id && S.p && S.p[0] && S.p[1]) return S.p;
+    const pos = (g, n) => C[g].completo ? C[g].lista[n - 1].id : null;
+    const venc = q => R[q] ? R[q].venc : null;
+    const perd = q => R[q] ? R[q].p.find(x => x !== R[q].venc) : null;
+    return { Q1: [pos("A", 1), pos("B", 2)], Q2: [pos("C", 1), pos("D", 2)], Q3: [pos("B", 1), pos("A", 2)], Q4: [pos("D", 1), pos("C", 2)],
+             S1: [venc("Q1"), venc("Q2")], S2: [venc("Q3"), venc("Q4")], T3: [perd("S1"), perd("S2")], F: [venc("S1"), venc("S2")] }[id];
+  }
+  const aoVivo = id => !!(S && S.jogo === id && !S.fim && S.p && S.p[0] && S.p[1] && (S.cur[0] + S.cur[1] > 0 || (S.sets || []).length));
+
+  // texto do resultado na ordem em que os jogadores aparecem
+  function placarTxt(id, p) {
+    const r = R[id];
+    if (r) {
+      const ia = r.p.indexOf(p[0]), ib = 1 - ia;
+      if (r.sets.length === 1) return r.sets[0][ia] + " × " + r.sets[0][ib];
+      return setsDe(r, ia) + " × " + setsDe(r, ib) + " <small>(" + r.sets.map(s => s[ia] + "-" + s[ib]).join(", ") + ")</small>";
+    }
+    if (aoVivo(id)) {
+      const ia = S.p.indexOf(p[0]), ib = 1 - ia, sets = S.sets || [];
+      const mm = MM.includes(id);
+      const sv = mm ? " <small>(sets " + sets.filter(s => venceuSet(s, ia)).length + " × " + sets.filter(s => venceuSet(s, ib)).length + ")</small>" : "";
+      return '<span class="tag-vivo">Ao vivo</span>' + S.cur[ia] + " × " + S.cur[ib] + sv;
+    }
+    return "";
+  }
+  const nomeCurto = (x, venc) => '<span class="' + (x && x === venc ? "venc" : "") + '">' + esc(prim(x)) + " <i>(" + esc(setor(x)) + ")</i></span>";
+
+  function render() {
+    const C = {}; "ABCD".split("").forEach(g => { C[g] = classifica(g); });
+    // classificação dos grupos
+    document.getElementById("classif").innerHTML = "ABCD".split("").map(g => {
+      const c = C[g];
+      return '<div class="tab-grupo"><h4 class="display">Grupo ' + g + "<small>" + (c.completo ? "grupo encerrado" : c.feitos + " de 6 jogos") + "</small></h4>" +
+        '<table><thead><tr><th></th><th>Atleta</th><th title="Jogos">J</th><th title="Vitórias">V</th><th title="Derrotas">D</th><th title="Saldo de pontos">SP</th></tr></thead><tbody>' +
+        c.lista.map((o, i) => '<tr class="' + (i < 2 && c.feitos ? "passa " : "") + (i < 2 && c.completo ? "certo" : "") + '"><td class="pos">' + (i + 1) + "º</td>" +
+          '<td class="atl">' + esc(nome(o.id)) + "<small>" + esc(setor(o.id)) + "</small></td><td>" + o.J + '</td><td class="v">' + o.V + "</td><td>" + o.D + "</td><td>" +
+          (o.PF - o.PC > 0 ? "+" : "") + (o.PF - o.PC) + "</td></tr>").join("") +
+        "</tbody></table></div>";
+    }).join("");
+    // tabela: fase de grupos
+    document.querySelectorAll(".dia.grupos-dia li").forEach((li, n) => {
+      const j = JG[n]; if (!j) return;
+      const r = R[j.id], vivo = aoVivo(j.id);
+      li.className = r ? "feito" : vivo ? "aovivo" : "";
+      li.innerHTML = "<b>" + j.p.map(x => nomeCurto(x, r && r.venc)).join(" × ") + "</b>" + ((r || vivo) ? '<span class="res">' + placarTxt(j.id, j.p) + "</span>" : "");
+    });
+    // tabela: mata-mata (quinta e sexta)
+    document.querySelectorAll(".tabela .dia:not(.grupos-dia) li").forEach((li, n) => {
+      const id = MM[n]; if (!id) return;
+      if (!li.dataset.rot) { const sm = li.querySelector("small"); li.dataset.rot = sm ? sm.textContent : ""; }
+      const p = jogadoresMM(id, C), r = R[id], vivo = aoVivo(id);
+      const nomes = p.map((x, i) => x ? nomeCurto(x, r && r.venc) : PADRAO[id][i]).join(" × ");
+      li.classList.toggle("feito", !!r); li.classList.toggle("aovivo", vivo && !r);
+      li.innerHTML = "<b>" + nomes + "</b><small>" + esc(li.dataset.rot) + "</small>" + ((r || vivo) && p[0] && p[1] ? '<span class="res">' + placarTxt(id, p) + "</span>" : "");
+    });
+    // chave
+    const ORD = ["Q1", "Q2", "Q3", "Q4", "S1", "S2", "F"];
+    document.querySelectorAll(".chave .jogo").forEach((el, n) => {
+      const id = ORD[n]; if (!id) return;
+      const p = jogadoresMM(id, C), r = R[id];
+      el.classList.toggle("aovivo", aoVivo(id));
+      el.querySelectorAll(".slot").forEach((sl, i) => {
+        if (!sl.dataset.rot) sl.dataset.rot = sl.textContent;
+        const x = p[i];
+        sl.classList.toggle("venceu", !!(r && r.venc === x));
+        sl.innerHTML = x ? esc(nome(x)) + (r ? '<span class="sets">' + setsDe(r, r.p.indexOf(x)) + "</span>" : "") : esc(sl.dataset.rot);
+      });
+    });
+    const t3 = jogadoresMM("T3", C), tt = document.getElementById("terceiro-txt");
+    if (tt && t3[0] && t3[1]) tt.innerHTML = "Sex 04/12 · " + esc(nome(t3[0])) + " × " + esc(nome(t3[1])) + ", em melhor de 3 sets." +
+      (R.T3 ? " <b>" + esc(nome(R.T3.venc)) + " ficou com o 3º lugar (" + placarTxt("T3", t3) + ").</b>" : "");
+    // faixa "ao vivo"
+    const bn = document.getElementById("aovivo"), idv = S && S.jogo;
+    if (idv && aoVivo(idv)) {
+      const jg = JG.find(j => j.id === idv);
+      const fase = jg ? "Fase de grupos · Grupo " + jg.g + " · Jogo " + jg.k : (NOME_MM[idv] || "");
+      const sets = S.sets || [], s0 = sets.filter(s => venceuSet(s, 0)).length, s1 = sets.filter(s => venceuSet(s, 1)).length;
+      bn.innerHTML = '<span class="tag-vivo">Ao vivo</span><b>' + esc(nome(S.p[0])) + '</b><span class="placar-vivo">' + S.cur[0] + " × " + S.cur[1] + "</span><b>" +
+        esc(nome(S.p[1])) + '</b><span class="fase-vivo">' + esc(fase) + (jg ? "" : " · sets " + s0 + " × " + s1) + "</span>";
+      bn.hidden = false;
+    } else bn.hidden = true;
+  }
+
+  function aplicar(d) {
+    try { R = d && d.res ? (JSON.parse(d.res) || {}) : {}; S = d && d.st ? JSON.parse(d.st) : null; } catch (e) { return; }
+    render();
+  }
+  const buscar = () => fetch(FB).then(r => r.json()).then(aplicar).catch(() => {});
+  render();
+  try {
+    const es = new EventSource(FB);
+    es.addEventListener("put", e => { const m = JSON.parse(e.data); if (m.path === "/") aplicar(m.data); else buscar(); });
+    es.addEventListener("patch", buscar);
+  } catch (e) { buscar(); }
+  setInterval(buscar, 60000);   // garantia, caso a conexão ao vivo caia
+})();
 </script>
 </body>
 </html>
