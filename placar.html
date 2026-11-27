@@ -121,6 +121,13 @@
   .sorteio.saindo { opacity: 0; }
   .sorteio.fim .sj.on { animation: pulo .6s ease-out; }
 
+  .rede { position: fixed; left: 1vw; bottom: 1.2vh; width: 1.2vh; height: 1.2vh; border-radius: 50%; background: var(--muted); opacity: .45; z-index: 5; }
+  .rede.on { background: var(--green); }
+  .rede.off { background: #e8544a; opacity: .95; }
+  #rede-txt { font-weight: 700; }
+  #rede-txt.on { color: var(--green); }
+  #rede-txt.off { color: #ff7b70; }
+
   /* ---------- controles ---------- */
   .engrenagem { position: fixed; right: 14px; bottom: 14px; z-index: 30; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .12); color: var(--white); padding: 8px 14px; font-weight: 700; opacity: 0; transition: opacity .3s; }
   body.mexeu .engrenagem, .engrenagem:focus-visible { opacity: 1; }
@@ -166,6 +173,7 @@
 </div>
 
 <div class="aviso display" id="aviso"></div>
+<div class="rede" id="rede"></div>
 <div class="vitoria" id="vitoria" hidden></div>
 <div class="sorteio" id="sorteio" hidden>
   <div class="sorteio-card">
@@ -211,11 +219,12 @@
     <button class="btn verde" id="proximo" type="button">Próximo jogo →</button>
     <button class="btn ghost" id="zerar" type="button">Zerar placar</button>
     <button class="btn ghost" id="copiar" type="button">Copiar resultados</button>
+    <button class="btn ghost" id="apagar-tudo" type="button">🗑 Apagar todos os resultados</button>
     <button class="btn ghost" id="cheia" type="button">⛶ Tela cheia</button>
     <span class="sep"></span>
     <button class="btn ghost" id="fechar" type="button">Ocultar controles (H)</button>
   </div>
-  <p class="dica">Atalhos: <kbd>←</kbd> ponto da esquerda · <kbd>→</kbd> ponto da direita · <kbd>Backspace</kbd> desfazer · <kbd>S</kbd> inverter lados · <kbd>R</kbd> sortear quem saca · <kbd>F</kbd> tela cheia · <kbd>A</kbd> aquecimento · <kbd>I</kbd> intervalo · <kbd>P</kbd> parar cronômetro · <kbd>H</kbd> mostrar/ocultar controles. Para controlar de outra janela no mesmo computador, abra <b>placar.html?controle</b>: as duas ficam sincronizadas.</p>
+  <p class="dica"><span id="rede-txt">● Conectando ao placar online…</span><br>Atalhos: <kbd>←</kbd> ponto da esquerda · <kbd>→</kbd> ponto da direita · <kbd>Backspace</kbd> desfazer · <kbd>S</kbd> inverter lados · <kbd>R</kbd> sortear quem saca · <kbd>F</kbd> tela cheia · <kbd>A</kbd> aquecimento · <kbd>I</kbd> intervalo · <kbd>P</kbd> parar cronômetro · <kbd>H</kbd> mostrar/ocultar controles. Para controlar de outra janela no mesmo computador, abra <b>placar.html?controle</b>: as duas ficam sincronizadas.</p>
 </div>
 
 <script>
@@ -424,12 +433,53 @@ function tickSorteio() {
 setInterval(tickSorteio, 40);
 
 /* ---------- sincronização entre janelas ---------- */
+/* Placar online (Firebase): cada mudança vai para o banco e chega na hora em qualquer aparelho com o placar aberto.
+   A versão (hora da mudança) decide quem é o mais novo; o localStorage segura o placar se a internet cair. */
+const FIREBASE = "https://placar-tenis-de-mesa-arce-default-rtdb.firebaseio.com/placar-tm-arce-2026/agora";
+const ORIGEM = Math.random().toString(36).slice(2);
+let versao = ler(CHAVE + "-v", 0), avisoVisto = null;
+function marcarOnline(ok) {
+  const d = document.getElementById("rede"), t = document.getElementById("rede-txt");
+  if (d) { d.className = "rede " + (ok ? "on" : "off"); d.title = ok ? "Placar online" : "Sem conexão: salvando só neste aparelho"; }
+  if (t) { t.textContent = ok ? "● Online: sincronizado com todos os aparelhos" : "● Sem conexão: salvando neste aparelho até a internet voltar"; t.className = ok ? "on" : "off"; }
+}
+function enviar(aviso) {
+  const corpo = { v: versao, origem: ORIGEM, st: JSON.stringify({ ...st, hist: (st.hist || []).slice(-60) }),
+                  res: JSON.stringify(resultados), aviso: aviso ? JSON.stringify(aviso) : null, avisoId: aviso ? ORIGEM + versao : null };
+  fetch(FIREBASE + ".json", { method: "PUT", body: JSON.stringify(corpo) })
+    .then(r => { if (!r.ok) throw new Error(r.status); marcarOnline(true); })
+    .catch(() => marcarOnline(false));
+}
+function aplicarRemoto(d) {
+  if (!d) { if (versao) enviar(null); return; }          // banco vazio: sobe o placar deste aparelho
+  if (d.v === versao) return;
+  if (d.v < versao) { enviar(null); return; }             // este aparelho mexeu offline e está mais novo
+  let novoSt, novoRes;
+  try { novoSt = JSON.parse(d.st); novoRes = JSON.parse(d.res) || {}; } catch { return; }
+  versao = d.v; gravar(CHAVE + "-v", versao);
+  st = novoSt; resultados = novoRes; gravar(CHAVE, st); gravar(CHAVE_RES, resultados);
+  render(); tickCrono();
+  if (d.aviso && d.origem !== ORIGEM && d.avisoId !== avisoVisto) { avisoVisto = d.avisoId; try { mostrarAviso(JSON.parse(d.aviso)); } catch {} }
+}
+function conectar() {
+  let es; try { es = new EventSource(FIREBASE + ".json"); } catch { marcarOnline(false); return; }
+  const buscar = () => fetch(FIREBASE + ".json").then(r => r.json()).then(aplicarRemoto).catch(() => {});
+  es.addEventListener("put", e => { marcarOnline(true); const m = JSON.parse(e.data); if (m.path === "/") aplicarRemoto(m.data); else buscar(); });
+  es.addEventListener("patch", () => buscar());
+  es.addEventListener("open", () => marcarOnline(true));
+  es.addEventListener("error", () => marcarOnline(false));      // o navegador reconecta sozinho
+}
+
 function publicar(aviso) {
-  gravar(CHAVE, st);
-  if (canal) canal.postMessage({ st, resultados, aviso });
+  versao = Math.max(Date.now(), versao + 1);
+  gravar(CHAVE, st); gravar(CHAVE + "-v", versao);
+  if (canal) canal.postMessage({ st, resultados, aviso, versao });
+  enviar(aviso);
   render(); tickCrono(); if (aviso) mostrarAviso(aviso);
 }
 function receber(dados) {
+  if (dados.versao && dados.versao <= versao) return;
+  if (dados.versao) { versao = dados.versao; gravar(CHAVE + "-v", versao); }
   st = dados.st; resultados = dados.resultados || resultados;
   render(); tickCrono(); if (dados.aviso) mostrarAviso(dados.aviso);
 }
@@ -562,6 +612,11 @@ $("zerar").onclick = () => { if (confirm("Zerar o placar deste jogo?")) { if (st
 $("proximo").onclick = proximoJogo;
 $("cheia").onclick = telaCheia;
 $("copiar").onclick = copiarResultados;
+$("apagar-tudo").onclick = () => {
+  if (!confirm("Apagar TODOS os resultados e zerar o placar, em todos os aparelhos? Use só para limpar testes.")) return;
+  resultados = {}; gravar(CHAVE_RES, resultados);
+  st = novoEstado(jogoPadrao()); publicar();
+};
 $("fechar").onclick = () => mostrarControles(false);
 $("fechar-x").onclick = () => mostrarControles(false);
 $("engrenagem").onclick = () => mostrarControles(true);
@@ -597,6 +652,7 @@ let tMexeu; addEventListener("mousemove", () => { document.body.classList.add("m
 
 if (new URLSearchParams(location.search).has("controle")) mostrarControles(true);
 render();
+conectar();
 </script>
 </body>
 </html>
