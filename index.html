@@ -1065,7 +1065,9 @@
     return { Q1: [pos("A", 1), pos("B", 2)], Q2: [pos("C", 1), pos("D", 2)], Q3: [pos("B", 1), pos("A", 2)], Q4: [pos("D", 1), pos("C", 2)],
              S1: [venc("Q1"), venc("Q2")], S2: [venc("Q3"), venc("Q4")], T3: [perd("S1"), perd("S2")], F: [venc("S1"), venc("S2")] }[id];
   }
-  const aoVivo = id => !!(S && S.jogo === id && !S.fim && S.p && S.p[0] && S.p[1] && (S.cur[0] + S.cur[1] > 0 || (S.sets || []).length));
+  const aoVivo = id => !!(S && S.jogo === id && S.p && S.p[0] && S.p[1] && !R[id] && (S.fim ? !S.fim.ok : (S.cur[0] + S.cur[1] > 0 || (S.sets || []).length)));
+  // pontos para mostrar ao vivo: no fim de jogo ainda não encerrado, o placar do último set
+  const pontosVivo = () => (S.fim && (S.sets || []).length) ? S.sets[S.sets.length - 1] : S.cur;
 
   // texto do resultado na ordem em que os jogadores aparecem
   function placarTxt(id, p) {
@@ -1079,7 +1081,8 @@
       const ia = S.p.indexOf(p[0]), ib = 1 - ia, sets = S.sets || [];
       const mm = MM.includes(id);
       const sv = mm ? " <small>(sets " + sets.filter(s => venceuSet(s, ia)).length + " × " + sets.filter(s => venceuSet(s, ib)).length + ")</small>" : "";
-      return '<span class="tag-vivo">Ao vivo</span>' + S.cur[ia] + " × " + S.cur[ib] + sv;
+      const pv = pontosVivo();
+      return '<span class="tag-vivo">Ao vivo</span>' + pv[ia] + " × " + pv[ib] + sv;
     }
     return "";
   }
@@ -1135,8 +1138,8 @@
       const jg = JG.find(j => j.id === idv);
       const fase = jg ? "Fase de grupos · Grupo " + jg.g + " · Jogo " + jg.k : (NOME_MM[idv] || "");
       const sets = S.sets || [], s0 = sets.filter(s => venceuSet(s, 0)).length, s1 = sets.filter(s => venceuSet(s, 1)).length;
-      bn.innerHTML = '<span class="tag-vivo">Ao vivo</span><b>' + esc(nome(S.p[0])) + '</b><span class="placar-vivo">' + S.cur[0] + " × " + S.cur[1] + "</span><b>" +
-        esc(nome(S.p[1])) + '</b><span class="fase-vivo">' + esc(fase) + (jg ? "" : " · sets " + s0 + " × " + s1) + "</span>";
+      bn.innerHTML = '<span class="tag-vivo">Ao vivo</span><b>' + esc(nome(S.p[0])) + '</b><span class="placar-vivo">' + pontosVivo()[0] + " × " + pontosVivo()[1] + "</span><b>" +
+        esc(nome(S.p[1])) + '</b><span class="fase-vivo">' + esc(fase) + (jg ? "" : " · sets " + s0 + " × " + s1) + (S.fim ? " · fim de jogo, aguardando o encerramento" : "") + "</span>";
       bn.hidden = false;
     } else bn.hidden = true;
   }
